@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>uk.gov.defra.jncc</groupId>
+        <artifactId>wff</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+      
+    <groupId>uk.gov.defra.jncc.wff</groupId>
+    <artifactId>crud</artifactId>
+    <packaging>jar</packaging>
+    
+    <name>${project.artifactId}-${project.version}</name>
+    <description>RESTful API for search and downloading Satellite Scenes</description>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>OSGEO GeoTools repo</id>
+            <url>http://download.osgeo.org/webdav/geotools</url>
+        </repository>
+        <repository>
+            <id>Hibernate Spatial repo</id>
+            <url>http://www.hibernatespatial.org/repository</url>
+        </repository>
+        <!-- add JBOSS repository for easy access to Hibernate libraries -->
+        <repository>
+            <id>JBOSS</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Spring Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Documentation Plugins -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <!-- Hibernate Plugins -->     
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.3.11.Final</version>
+        </dependency>                   
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.3.11.Final</version>
+        </dependency>       
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>1.13</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-spatial</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geolatte</groupId>
+            <artifactId>geolatte-geom</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>1.5.2</version>
+            <scope>provided</scope>                
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mysema.maven</groupId>
+                <artifactId>apt-maven-plugin</artifactId>
+                <version>1.1.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/generated-sources/java</outputDirectory>
+                            <processor>com.mysema.query.apt.hibernate.HibernateAnnotationProcessor</processor>
+                            <spatial>true</spatial>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>  
+        </plugins>
+    </build>    
+</project>
