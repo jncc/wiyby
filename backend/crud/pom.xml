@@ -11,7 +11,7 @@
     <artifactId>crud</artifactId>
     <packaging>jar</packaging>
     
-    <name>${project.artifactId}-${project.version}</name>
+    <name>wff-${project.artifactId}-${project.version}</name>
     <description>RESTful API for search and downloading Satellite Scenes</description>
     
     <properties>
@@ -44,11 +44,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>        
+        </dependency>  
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

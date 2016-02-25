@@ -7,9 +7,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = WiybyForFarmersApplication.class)
+@SpringApplicationConfiguration(classes = BackendApplication.class)
 @WebAppConfiguration
-public class WiybyForFarmersApplicationTests {
+public class BackendApplicationTests {
 
 	@Test
 	public void contextLoads() {

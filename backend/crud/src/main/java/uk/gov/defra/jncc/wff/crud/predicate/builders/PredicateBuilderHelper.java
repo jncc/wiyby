@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.gov.defra.jncc.topsat.crud.predicate.builders;
+package uk.gov.defra.jncc.wff.crud.predicate.builders;
 
 import com.mysema.query.types.expr.BooleanExpression;
 import java.util.List;

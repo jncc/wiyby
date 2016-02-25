@@ -1,0 +1,14 @@
+spring:
+    profiles.active: default
+---
+spring:
+    profiles: default
+spring.datasource:
+    url: jdbc:postgresql://52.50.46.53:5432/spatial
+    username: admin
+    password: admin_password
+    maxActive: 20
+    maxIdle: 20 
+spring.jpa:
+    show-sql: true
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
