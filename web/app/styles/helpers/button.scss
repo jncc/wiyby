@@ -1,0 +1,33 @@
+/* 
+    Created on : 10-Feb-2016, 12:02:47
+    Author     : Matt Debont
+*/
+
+@import 'bower_components/govuk_frontend_toolkit/stylesheets/_typography';
+@import 'bower_components/govuk_frontend_toolkit/stylesheets/design-patterns/_buttons';
+
+/** 
+ * Button Styling 
+ */
+.button{
+    @include button;
+}
+
+.button-start,
+.button-get-started {
+    @include core-19($line-height: (6/5), $font-weight: (700));
+    text-transform: none;
+    background-image: url("/images/govuk/icon-pointer.png");
+    background-repeat: no-repeat;
+    background-position: 100% 50%;
+    padding: 0.3684210526em 2.1578947368em 0.2105263158em 0.8421052632em;
+}
+
+.button-back {
+    @include core-19($line-height: (6/5), $font-weight: (700));
+    text-transform: none;
+    background-image: url("/images/govuk/icon-pointer-flip.png");
+    background-repeat: no-repeat;
+    background-position: 10% 50%;
+    padding: 0.3684210526em 0.8421052632em 0.2105263158em 2.1578947368em;
+}

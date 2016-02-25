@@ -1,0 +1,345 @@
+@import "bower_components/govuk_frontend_toolkit/stylesheets/_conditionals";
+@import "bower_components/govuk_frontend_toolkit/stylesheets/_typography";
+@import "bower_components/govuk_frontend_toolkit/stylesheets/_colours";
+@import "bower_components/govuk_frontend_toolkit/stylesheets/_grid_layout";
+
+/**
+ * Headings
+ *
+ * Common heading sizes
+ * Using the bold-xx mixins from the govuk_toolkit _typography.scss file
+ * Spacing is set in em, using the px to em function in the elements _helpers.scss file
+ */
+
+.heading-xlarge {
+  @include bold-48();
+
+  margin-top: em(15, 32);
+  margin-bottom: em(30, 32);
+
+  @include media(tablet) {
+    margin-top: em(30, 48);
+    margin-bottom: em(60, 48);
+  }
+
+  .heading-secondary {
+    @include heading-27();
+
+    display: block;
+    color: $secondary-text-colour;
+  }
+}
+
+.heading-large {
+  @include bold-36();
+
+  margin-top: 1em;
+  margin-bottom: 0.75em; 
+
+  .heading-secondary {
+    @include heading-24();
+
+    display: block;
+    color: $secondary-text-colour;
+  }
+}
+
+.heading-medium {
+  @include bold-24();
+  margin-top: 1em;
+  margin-bottom: 0.75em; 
+}
+
+.heading-small {
+  @include bold-19();
+  margin-top: 1em;
+  margin-bottom: 0.75em;
+}
+
+/**
+ * Text sizes
+ *
+ * Increase the base font size to 19px for the main content area
+ * Using the core-19 mixin from the govuk_toolkit _typography.scss file
+ */
+
+main {
+  @include core-16;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Core font sizes
+.font-xxlarge {
+  @include core-80;
+}
+
+.font-xlarge {
+  @include core-36;
+}
+
+.font-large {
+  @include core-24;
+}
+
+.font-medium {
+  @include core-19;
+}
+
+.font-small {
+  @include core-16;
+}
+
+.font-xsmall {
+  @include core-14;
+}
+
+// Bold font sizes
+.bold-xxlarge {
+  @include bold-80();
+}
+
+.bold-xlarge {
+  @include bold-48();
+}
+
+.bold-large {
+  @include bold-36();
+}
+
+.bold-medium {
+  @include bold-24();
+}
+
+.bold-small {
+  @include bold-19();
+}
+
+.bold-xsmall {
+  @include bold-16();
+}
+
+// Text
+p {
+  margin-top: 0.75em;
+  margin-bottom: 0;   
+}
+
+// Lede, or intro text
+.lede {
+  @include core-24;
+}
+
+// Set a max-width for text blocks
+// Less than 75 characters per line of text
+.text {
+  max-width: 30em;
+}
+
+.text-secondary {
+  color: $secondary-text-colour;
+}
+
+// Link styles
+.link {
+  color: $link-colour;
+  text-decoration: underline;
+}
+
+.link:visited {
+  color: $link-visited-colour;
+}
+
+.link:hover {
+  color: $link-hover-colour;
+}
+
+.link:active {
+  color: $link-colour;
+}
+
+a {
+    text-decoration: underline;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.3); 
+}
+
+a:link {
+    color: $link-colour; 
+}
+
+a:visited {
+    color: $link-visited-colour; 
+}
+
+a:hover {
+    color: $link-hover-colour; 
+}
+
+a:active {
+    color: $link-active-colour; 
+}
+
+a:focus {
+    background-color: $yellow;
+}
+
+a[rel="external"]:after {
+    background-image: url(/images/govuk/external-link.png);
+    background-repeat: no-repeat; 
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+    a[rel="external"]:after {
+        background-image: url(/images/govuk/external-link-24x24.png);
+        background-size: 12px 400px; 
+    } 
+}
+
+a[rel="external"]:after {
+    content: "\A0\A0\A0\A0";
+    background-position: right 6px; 
+}
+
+a[rel="external"]:hover:after {
+    background-position: right -382px; 
+}
+
+@media (max-width: 640px) {
+    a[rel="external"]:after {
+        content: "\A0\A0\A0\A0";
+        background-position: right 3px; 
+    }
+    a[rel="external"]:hover:after {
+        background-position: right -385px; 
+    } 
+}
+
+.external-link:after {
+    content: "\A0\A0\A0\A0";
+    background-position: right 0px; 
+}
+
+.external-link:hover:after {
+    background-position: right 0px; 
+}
+
+.external-link:after {
+    background-image: url(/images/govuk/external-link-black-12x12.png);
+    background-repeat: no-repeat; 
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+    .external-link:after {
+        background-image: url(/images/govuk/external-link-black-24x24.png);
+        background-size: 12px 400px; 
+    } 
+}
+
+// Back link styles - with left pointing arrow
+
+.link-back {
+  @include inline-block;
+  position: relative;
+
+  @include core-16;
+
+  margin-top: $gutter-half;
+  margin-bottom: $gutter-half;
+  padding-left: 14px;
+
+  color: $black;
+
+  &:link,
+  &:visited,
+  &:hover,
+  &:active {
+    color: $black;
+  }
+
+  text-decoration: none;
+  border-bottom: 1px solid $black;
+
+  // Back arrow - left pointing black arrow
+  &::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+
+    border-top: 5px solid transparent;
+    border-right: 6px solid #0b0c0c;
+    border-bottom: 5px solid transparent;
+
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -6px;
+  }
+
+  // Fallback
+  // IE8 doesn't support rgba and only supports the single colon syntax for :before
+  // IE7 doesn't support pseudo-elements, let's fallback to an image instead.
+  // Ref: http://caniuse.com/#search=%3Abefore, http://caniuse.com/#search=rgba
+  @include ie-lte(8) {
+   background: file-url("icon-arrow-left.png") no-repeat 0 4px;
+  }
+
+}
+
+// Code styles
+.code {
+  color: black;
+  text-shadow: 0 1px white;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+
+  color: $black;
+  background-color: $highlight-colour;
+  border: 1px solid $border-colour;
+  padding: 4px 4px 2px 4px;
+}
+
+// Horizontal rule style
+hr {
+  display: block;
+  background: $border-colour;
+  border: 0;
+  height: 1px;
+  margin-top: $gutter;
+  margin-bottom: $gutter;
+  padding: 0;
+  @include ie-lte(7) {
+    color: $border-colour;
+  }
+}
+
+// Notice, text with an icon to the left
+.notice {
+  @extend %contain-floats;
+  position: relative;
+  .icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -17px; // Half the height of the important icon
+  }
+  strong {
+    display: block;
+    padding-left: (35 + 30)+px;
+    margin-left: -$gutter-half;
+  }
+}

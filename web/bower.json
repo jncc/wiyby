@@ -1,0 +1,17 @@
+{
+  "name": "test",
+  "private": true,
+  "dependencies": {
+    "bootstrap-sass": "~3.3.5",
+    "govuk_frontend_toolkit": "git://github.com/alphagov/govuk_frontend_toolkit#v4.7.0"
+  },
+  "overrides": {
+    "bootstrap-sass": {
+      "main": [
+        "assets/stylesheets/_bootstrap.scss",
+        "assets/fonts/bootstrap/*",
+        "assets/javascripts/bootstrap.js"
+      ]
+    }
+  }
+}

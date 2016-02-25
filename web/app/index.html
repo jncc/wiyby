@@ -1,0 +1,124 @@
+<!doctype html>
+<!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--><html lang="en" style="height:100%;"><!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <title>WIYBY</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <!-- build:css(.) styles/vendor.css -->
+        <!-- bower:css -->
+
+        <!-- endbower -->
+        <!-- endbuild -->
+        <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/animation.css">
+        <link rel="stylesheet" href="styles/header.css">
+        <link rel="stylesheet" href="styles/footer.css">
+        <!-- endbuild -->
+        <base href="/">
+    </head>
+    <body ng-app="topMapApp"  style="height: 100%;">
+        <!--[if lte IE 8]>
+          <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div>
+            <header role="banner" id="global-header" class="">
+                <div class="header-wrapper">
+                    <div class="header-global">
+                        <div class="header-logo">
+                            <a href="https://www.gov.uk" title="Go to the GOV.UK homepage" id="logo" class="content">
+                                <img src="/images/govuk/gov.uk_logotype_crown_invert_trans.png" width="40" height="31" alt=""> GOV.UK
+                            </a>
+                        </div>
+                    </div>
+                    <div class="header-proposition" ng-controller="NavbarCtrl">
+                        <div class="content">
+<!--                            <a href="#proposition-links" class="js-header-toggle menu">Menu</a>-->
+                            <nav id="proposition-menu">
+                                <a href="/#/" id="proposition-name">WIYBY For Farmers</a>
+<!--                                <ul id="proposition-links">
+                                    <li><a ng-class="{ active: isCurrentPath('/') }" href="/#/">Home</a></li>
+                                    <li><a ng-class="{ active: isCurrentPath('/data') }" href="/#/data">Data</a></li>
+                                    <li><a ng-class="{ active: isCurrentPath('/roadmap') }" href="/#/roadmap">Roadmap</a></li>
+                                    <li><a ng-class="{ active: isCurrentPath('/about') }" href="/#/about">About</a></li>
+                                </ul>-->
+                            </nav>
+                        </div>
+                    </div>                
+                </div>
+            </header>     
+        </div>
+
+        <div class="phase-banner" style="padding-left:10px">
+            <p>
+                <strong class="phase-tag">ALPHA</strong>
+                <span>This is a new service – your <a href="/#/feedback">feedback</a> will help us to improve it.</span>
+            </p>
+        </div>             
+
+        <div ng-view="" ng-style="contentDivHeight"></div>
+
+        <div>
+            <footer id="footer" ng-class="{'hidden': $hideFooter}">
+                <div class="footer-wrapper">
+                    <div class="footer-meta">
+                        <div class="footer-meta-inner">
+                            <h2 class="visuallyhidden">Support links</h2>
+                            <ul>
+                                <li><a href="/#/help">Help</a></li>
+                                <li><a href="/#/help#cookies">Cookies</a></li>
+                                <li><a href="/#/feedback">Contact</a></li>
+                                <li><a href="/#/terms">Terms and conditions</a></li>
+                                <li>Built by <a class="external-link" href="https://jncc.defra.gov.uk">JNCC</a></li>
+                            </ul>
+                            <div class="open-government-licence">
+                                <p class="logo"><a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a></p>
+                                <!--<p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>-->
+                            </div>
+                        </div>
+
+                        <div class="copyright">
+                            <a class="crown-link" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>        
+        </div>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
+        <script>
+                                    !function (A, n, g, u, l, a, r) {
+                                    A.GoogleAnalyticsObject = l, A[l] = A[l] || function () {
+                                    (A[l].q = A[l].q || []).push(arguments)
+                                    }, A[l].l = + new Date, a = n.createElement(g),
+                                            r = n.getElementsByTagName(g)[0], a.src = u, r.parentNode.insertBefore(a, r)
+                                    }(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+                                    ga('create', 'UA-XXXXX-X');
+                                    ga('send', 'pageview');
+        </script>
+
+        <!-- build:js(.) scripts/vendor.js -->
+        <!-- bower:js -->
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/affix.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/alert.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/dropdown.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tooltip.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/modal.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/transition.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/button.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/popover.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/carousel.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/scrollspy.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/collapse.js"></script>
+        <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tab.js"></script>
+        <!-- endbower -->
+        <!-- endbuild -->
+
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/main.js"></script>
+        <!-- endbuild -->
+    </body>
+</html>
