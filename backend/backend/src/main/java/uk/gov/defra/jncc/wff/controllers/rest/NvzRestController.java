@@ -9,7 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +23,9 @@ import uk.gov.defra.jncc.wff.crud.entity.spatial.NitrateVulnerableZone;
 import uk.gov.defra.jncc.wff.resources.NvzResource;
 import uk.gov.defra.jncc.wff.resources.assemblers.NvzResourceAssembler;
 import uk.gov.defra.jncc.wff.crud.repository.NitrateVulnerableZoneRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 
 /**
  *
@@ -35,18 +38,15 @@ import uk.gov.defra.jncc.wff.crud.repository.NitrateVulnerableZoneRepository;
 public class NvzRestController {
     @Autowired NitrateVulnerableZoneRepository nvzRepository;
     @Autowired NvzResourceAssembler nvzResourceAssembler;
-//    @Autowired ApiConfiguration configuration;
     
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves all Nitrate Vulnerable Zones", 
         response = NvzResource.class, 
         responseContainer = "Page")
-    public HttpEntity<List<NvzResource>> getAll() {
-        Iterable<NitrateVulnerableZone> nvzones = nvzRepository.findAll();
-
-        return new ResponseEntity<List<NvzResource>>(nvzResourceAssembler.toResources(nvzones), HttpStatus.OK); 
-        
-        
+    public HttpEntity<PagedResources<NvzResource>> getAll(Pageable pageable, PagedResourcesAssembler assembler) {
+        Page<NitrateVulnerableZone> nvzs = nvzRepository.findAll(pageable);
+        return new ResponseEntity<PagedResources<NvzResource>>(assembler.toResource(nvzs, nvzResourceAssembler), HttpStatus.OK);       
     }
 }
+

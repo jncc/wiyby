@@ -76,11 +76,10 @@
             <version>2.2.2</version>
         </dependency>
         <!-- Database Drivers -->
-        <dependency>
-            <groupId>org.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>1.5.2</version>
-            <scope>provided</scope>                
+     <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
