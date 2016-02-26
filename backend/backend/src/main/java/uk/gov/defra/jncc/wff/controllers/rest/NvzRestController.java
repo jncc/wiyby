@@ -7,6 +7,7 @@ package uk.gov.defra.jncc.wff.controllers.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.PagedResources;
@@ -26,6 +27,11 @@ import uk.gov.defra.jncc.wff.crud.repository.NitrateVulnerableZoneRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.web.bind.annotation.RequestParam;
+import uk.gov.defra.jncc.wff.crud.predicate.builders.NitrateVulnerableZonePredicateBuilder;
+import uk.gov.defra.jncc.wff.crud.predicate.parameters.NitrateVulnerableZoneParameters;
+import com.mysema.query.types.expr.BooleanExpression;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  *
@@ -46,6 +52,25 @@ public class NvzRestController {
         responseContainer = "Page")
     public HttpEntity<PagedResources<NvzResource>> getAll(Pageable pageable, PagedResourcesAssembler assembler) {
         Page<NitrateVulnerableZone> nvzs = nvzRepository.findAll(pageable);
+        return new ResponseEntity<PagedResources<NvzResource>>(assembler.toResource(nvzs, nvzResourceAssembler), HttpStatus.OK);       
+    }
+    
+    @ResponseBody
+    @RequestMapping(path = "/search", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves all Nitrate Vulnerable Zones", 
+        response = NvzResource.class, 
+        responseContainer = "Page")
+    public HttpEntity<PagedResources<NvzResource>> search(Pageable pageable, 
+            PagedResourcesAssembler assembler,
+            @ApiParam(value = "A WKT bounding box defined in OSGB (EPSG:27700)")
+            @RequestParam(name = "wkt", required = false) String wkt) throws ParseException {
+        
+        NitrateVulnerableZoneParameters nvzparams = new NitrateVulnerableZoneParameters();
+        nvzparams.BoundingBoxWkt = wkt;
+        
+        BooleanExpression predicates = NitrateVulnerableZonePredicateBuilder.buildPredicates(nvzparams);
+        
+        Page<NitrateVulnerableZone> nvzs = nvzRepository.findAll(predicates, pageable);
         return new ResponseEntity<PagedResources<NvzResource>>(assembler.toResource(nvzs, nvzResourceAssembler), HttpStatus.OK);       
     }
 }
