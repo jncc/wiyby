@@ -62,7 +62,7 @@ public class NvzRestController {
         responseContainer = "Page")
     public HttpEntity<PagedResources<NvzResource>> search(Pageable pageable, 
             PagedResourcesAssembler assembler,
-            @ApiParam(value = "A WKT bounding box defined in OSGB (EPSG:27700)")
+            @ApiParam(value = "A WKT bounding box defined in OSGB (EPSG:4326)")
             @RequestParam(name = "wkt", required = false) String wkt) throws ParseException {
         
         NitrateVulnerableZoneParameters nvzparams = new NitrateVulnerableZoneParameters();
