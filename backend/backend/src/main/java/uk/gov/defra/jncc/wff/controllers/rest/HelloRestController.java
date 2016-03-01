@@ -13,20 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.gov.defra.jncc.wff.resources.Hello;
 
 /**
  *
  * @author Matt Debont
  */
 @RestController
-@RequestMapping(path = "/h", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/hi", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class HelloRestController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    public List<String> getAll() {
-        List<String> out = new ArrayList<>();
-        out.add("HELLO");
+    public List<Hello> getAll() {
+        List<Hello> out = new ArrayList<>();
+        out.add(new Hello("world"));
+        out.add(new Hello("EA"));
+        out.add(new Hello("Farmers"));
         return out;
     }
 }
