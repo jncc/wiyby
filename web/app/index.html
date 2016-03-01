@@ -13,6 +13,7 @@
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" href="styles/fonts.css">
         <link rel="stylesheet" href="styles/main.css">
         <link rel="stylesheet" href="styles/animation.css">
         <link rel="stylesheet" href="styles/header.css">
@@ -36,15 +37,15 @@
                     </div>
                     <div class="header-proposition" ng-controller="NavbarCtrl">
                         <div class="content">
-<!--                            <a href="#proposition-links" class="js-header-toggle menu">Menu</a>-->
+                            <!--                            <a href="#proposition-links" class="js-header-toggle menu">Menu</a>-->
                             <nav id="proposition-menu">
                                 <a href="/#/" id="proposition-name">WIYBY For Farmers</a>
-<!--                                <ul id="proposition-links">
-                                    <li><a ng-class="{ active: isCurrentPath('/') }" href="/#/">Home</a></li>
-                                    <li><a ng-class="{ active: isCurrentPath('/data') }" href="/#/data">Data</a></li>
-                                    <li><a ng-class="{ active: isCurrentPath('/roadmap') }" href="/#/roadmap">Roadmap</a></li>
-                                    <li><a ng-class="{ active: isCurrentPath('/about') }" href="/#/about">About</a></li>
-                                </ul>-->
+                                <!--                                <ul id="proposition-links">
+                                                                    <li><a ng-class="{ active: isCurrentPath('/') }" href="/#/">Home</a></li>
+                                                                    <li><a ng-class="{ active: isCurrentPath('/data') }" href="/#/data">Data</a></li>
+                                                                    <li><a ng-class="{ active: isCurrentPath('/roadmap') }" href="/#/roadmap">Roadmap</a></li>
+                                                                    <li><a ng-class="{ active: isCurrentPath('/about') }" href="/#/about">About</a></li>
+                                                                </ul>-->
                             </nav>
                         </div>
                     </div>                
@@ -52,17 +53,31 @@
             </header>     
         </div>
 
-        <div class="phase-banner" style="padding-left:10px">
-            <p>
-                <strong class="phase-tag">ALPHA</strong>
-                <span>This is a new service – your <a href="/#/feedback">feedback</a> will help us to improve it.</span>
-            </p>
-        </div>             
-
-        <div ng-view="" ng-style="contentDivHeight"></div>
+        <main id="content" role="main">
+            <div class="phase-banner" style="padding-left:10px">
+                <p>
+                    <strong class="phase-tag">ALPHA</strong>
+                    <span>This is a new service – your <a href="/#/feedback">feedback</a> will help us to improve it.</span>
+                </p>
+            </div>             
+            <div>
+                <h1 class="govuk-title">Hello WIYBY</h1>
+                <br/>
+            </div>
+            
+            <div class="grid-row">
+                <div class="column-two-thirds">
+                    <input class="input-box" style="width:60%; margin-right: 10px; " /><a class="button button-start" href="map.html" role="button">Search</a>
+                </div>
+                <div class="column-third">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+                </div>
+            </div>
+            <br />
+        </main>
 
         <div>
-            <footer id="footer" ng-class="{'hidden': $hideFooter}">
+            <footer id="footer">
                 <div class="footer-wrapper">
                     <div class="footer-meta">
                         <div class="footer-meta-inner">
@@ -90,14 +105,14 @@
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
         <script>
-                                    !function (A, n, g, u, l, a, r) {
-                                    A.GoogleAnalyticsObject = l, A[l] = A[l] || function () {
-                                    (A[l].q = A[l].q || []).push(arguments)
-                                    }, A[l].l = + new Date, a = n.createElement(g),
-                                            r = n.getElementsByTagName(g)[0], a.src = u, r.parentNode.insertBefore(a, r)
-                                    }(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-                                    ga('create', 'UA-XXXXX-X');
-                                    ga('send', 'pageview');
+            !function (A, n, g, u, l, a, r) {
+                A.GoogleAnalyticsObject = l, A[l] = A[l] || function () {
+                    (A[l].q = A[l].q || []).push(arguments)
+                }, A[l].l = +new Date, a = n.createElement(g),
+                        r = n.getElementsByTagName(g)[0], a.src = u, r.parentNode.insertBefore(a, r)
+            }(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+            ga('create', 'UA-XXXXX-X');
+            ga('send', 'pageview');
         </script>
 
         <!-- build:js(.) scripts/vendor.js -->
