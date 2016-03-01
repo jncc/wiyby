@@ -28,8 +28,8 @@ public class NitrateVulnerableZonePredicateBuilder {
             {
                 WKTReader fromText = new WKTReader();
                 Geometry boundingBox = fromText.read(params.BoundingBoxWkt);
-                boundingBox.setSRID(27700);
-                predicates.add(nvz.geom.intersects(boundingBox));   
+                boundingBox.setSRID(4326);
+                predicates.add(nvz.geom.transform(4326).intersects(boundingBox));   
             }
 
             return PredicateBuilderHelper.assemblePredicates(predicates);
