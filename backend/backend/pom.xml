@@ -12,12 +12,11 @@
     <description>WIYBY For Farmers Project</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.2.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>uk.gov.defra.jncc</groupId>
+        <artifactId>wff</artifactId>
+        <version>0.1-SNAPSHOT</version>
     </parent>
-
+    
     <repositories>
         <repository>
             <id>OSGEO GeoTools repo</id>
