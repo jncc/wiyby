@@ -25,9 +25,17 @@ import uk.gov.defra.jncc.wff.resources.statics.CodeMappings;
 public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZone>, Report> {
 
     private static final Map<String, String> mappings = CodeMappings.mappings();
+    private String wkt;
+    private String locality;
 
     public ReportAssembler() {
         super(ReportController.class, Report.class);
+    }
+    
+    public ReportAssembler(String wkt, String locality) {
+        super(ReportController.class, Report.class);
+        this.wkt = wkt;
+        this.locality = locality;
     }
 
     @Override
@@ -63,8 +71,13 @@ public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZon
         });
 
         Report output = new Report();
-        output.data = applyRules(zoneOutputList, codeOutputList);
+        output.setData(applyRules(zoneOutputList, codeOutputList));
 
+        if (wkt != null && !wkt.isEmpty() && locality != null && !locality.isEmpty()) {
+            output.setWkt(wkt);
+            output.setLocality(locality);
+        }
+        
         return output;
     }
 
@@ -91,11 +104,11 @@ public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZon
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
             } else {
-                String codeText;
-                codeText = mapCodesToText(codeOutputs.get("SGZ_SW"));
+                String codeText = mapCodesToText(codeOutputs.get("SGZ_SW"));
+                String urls = zoneOutputs.get("SGZ_SW").stream().map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br />"));
                 finalMap.put("SGZ_SW", Collections.unmodifiableMap(Stream.of(
                         new SimpleEntry<>("Heading", String.format("This land is within a surface water safeguard zone which protects drinking water from the following %s.", codeText)),
-                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around <<Locality>>. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>Visit the <a href=\"\">Safeguard Zone Action Plan for <<SGZ_Name>></a>", codeText))
+                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around <<Locality>>. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", codeText, urls))
                 ).collect(
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
@@ -104,9 +117,10 @@ public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZon
 
         if (codeOutputs.containsKey("SGZ_GW")) {
             String codeText = mapCodesToText(codeOutputs.get("SGZ_GW"));
+            String urls = zoneOutputs.get("SGZ_GW").stream().map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br/>"));
             finalMap.put("SGZ_GW", Collections.unmodifiableMap(Stream.of(
                     new SimpleEntry<>("Heading", String.format("This land is within a groundwater safeguard zone which protects drinking water from the following %s.", codeText)),
-                    new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around <<Locality>>. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>Visit the <a href=\"\">Safeguard Zone Action Plan for <<SGZ_Name>></a>", codeText))
+                    new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around <<Locality>>. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", codeText, urls))
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
@@ -125,11 +139,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZon
     }
 
     private String mapCodesToText(List<String> codes) {
-        StringJoiner sj = new StringJoiner(", ");
-        codes.stream().forEach((code) -> {
-            sj.add(code);
-        });
-        return sj.toString();
+        return codes.stream().collect(Collectors.joining(", "));
     }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {

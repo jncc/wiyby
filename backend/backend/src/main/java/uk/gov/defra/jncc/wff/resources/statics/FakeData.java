@@ -18,8 +18,8 @@ public class FakeData {
     public static AttributedZone SGZ_GW_2 = new AttributedZone("SGZ_GW_2", "SGZ_GW_2", "SGZ_GW", "http://ea/sgz_gw_2", "NITR_ABCD", null, null);
 
     public static AttributedZone SGZ_SW_1 = new AttributedZone("SGZ_SW_1", "SGZ_SW_1", "SGZ_SW", "http://ea/sgz_sw_1", "CODE_ABCD, NITR_ABCD, PEST_ABCD", null, null);
-    public static AttributedZone SGZ_SW_2 = new AttributedZone("SGZ_SW_1", "SGZ_SW_1", "SGZ_SW", "http://ea/sgz_sw_2", "PEST_ABCD", null, null);
-    public static AttributedZone SGZ_SW_3 = new AttributedZone("SGZ_SW_1", "SGZ_SW_1", "SGZ_SW", "http://ea/sgz_sw_3", null, null, null);
+    public static AttributedZone SGZ_SW_2 = new AttributedZone("SGZ_SW_1", "SGZ_SW_2", "SGZ_SW", "http://ea/sgz_sw_2", "PEST_ABCD", null, null);
+    public static AttributedZone SGZ_SW_3 = new AttributedZone("SGZ_SW_1", "SGZ_SW_3", "SGZ_SW", "http://ea/sgz_sw_3", null, null, null);
 
     public static AttributedZone NVZ = new AttributedZone("NVZ_1", "NVZ_1", "NVZ", "http://ea/nvz_1", null, null, null);
 
@@ -40,6 +40,7 @@ public class FakeData {
     public static List<AttributedZone> case3() {
         return Collections.unmodifiableList(Stream.of(
                 SGZ_SW_1,
+                SGZ_SW_2,
                 SGZ_SW_3
         ).collect(Collectors.toList()));
     }
