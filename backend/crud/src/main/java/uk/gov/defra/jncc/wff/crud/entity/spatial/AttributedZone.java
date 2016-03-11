@@ -1,25 +1,32 @@
 package uk.gov.defra.jncc.wff.crud.entity.spatial;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.io.Serializable;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  *
  * @author Matt Debont
  */
-public class AttributedZone {
+@Entity
+@Table(name = "attributed_zones")
+public class AttributedZone implements Serializable {
+    @Id
     private String id;
     private String name;
     private String type;
     private String url;
     private String attributes;
    
-    @Column(name="wkb_geometry", columnDefinition = "geometry(MultiPolygon,27700)")
+    @Column(name="geom", columnDefinition = "geometry(MultiPolygon,27700)")
     @Type(type = "org.hibernate.spatial.GeometryType")
     private Geometry geom;
     
-    @Column(name="wkb_geometry_wgs84", columnDefinition = "geometry(MultiPolygon,4326)")
+    @Column(name="geom_wgs84", columnDefinition = "geometry(MultiPolygon,4326)")
     @Type(type = "org.hibernate.spatial.GeometryType")
     private Geometry geom_wgs84;
 

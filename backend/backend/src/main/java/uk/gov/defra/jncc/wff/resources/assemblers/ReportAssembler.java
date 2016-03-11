@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import uk.gov.defra.jncc.wff.controllers.rest.ReportController;
 import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;
@@ -22,9 +21,9 @@ import uk.gov.defra.jncc.wff.resources.statics.CodeMappings;
  *
  * @author Matt Debont
  */
-public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZone>, Report> {
+public class ReportAssembler extends ResourceAssemblerSupport<Iterable<AttributedZone>, Report> {
 
-    private static final Map<String, String> mappings = CodeMappings.mappings();
+    private static final Map<String, String> MAPPINGS = CodeMappings.mappings();
     private String wkt;
     private String locality;
 
@@ -39,19 +38,23 @@ public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZon
     }
 
     @Override
-    public Report toResource(List<AttributedZone> zones) {
-
-        List<String> types = zones.stream()
+    public Report toResource(Iterable<AttributedZone> zones) {
+        // Turn returned Iterable into a stream
+        Stream<AttributedZone> zoneStream = StreamSupport.stream(zones.spliterator(), false);
+        
+        List<String> types = zoneStream
                 .filter(distinctByKey((zone) -> zone.getType()))
                 .map((zone) -> zone.getType())
                 .collect(Collectors.toList());
 
         Map<String, List<AttributedZone>> zoneOutputList = new ConcurrentHashMap<>();
         Map<String, List<String>> codeOutputList = new ConcurrentHashMap<>();
-
+        // Create a new stream from the Iterable for use in processing
+        Stream<AttributedZone> zonesProc = StreamSupport.stream(zones.spliterator(), false);        
+        
         types.stream().forEach((String type) -> {
             List<String> codes = new ArrayList<>();
-            List<AttributedZone> typeZones = zones.stream()
+            List<AttributedZone> typeZones = zonesProc
                     .filter((zone) -> zone.getType().equals(type))
                     .collect(Collectors.toList());
 
@@ -67,7 +70,8 @@ public class ReportAssembler extends ResourceAssemblerSupport<List<AttributedZon
                     });
 
             zoneOutputList.putIfAbsent(type, typeZones);
-            codeOutputList.putIfAbsent(type, codes.stream().distinct().map((code) -> mappings.get(code)).collect(Collectors.toList()));
+            //codeOutputList.putIfAbsent(type, codes.stream().distinct().map((code) -> MAPPINGS.get(code)).collect(Collectors.toList()));
+            codeOutputList.putIfAbsent(type, codes.stream().distinct().collect(Collectors.toList()));
         });
 
         Report output = new Report();

@@ -1,6 +1,7 @@
 package uk.gov.defra.jncc.wff.crud.entity.spatial;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -13,7 +14,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name = "nitrate_vulnerable_zones_view")
-public class NitrateVulnerableZone {
+public class NitrateVulnerableZone implements Serializable {
     @Id
     @Column(name="ogc_fid")
     private int fid;

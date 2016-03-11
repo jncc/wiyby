@@ -12,3 +12,5 @@ spring.datasource:
 spring.jpa:
     show-sql: true
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+spring.jpa.properties.hibernate:
+    default_schema: wiyby_data

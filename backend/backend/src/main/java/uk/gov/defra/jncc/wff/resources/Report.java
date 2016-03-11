@@ -1,13 +1,12 @@
 package uk.gov.defra.jncc.wff.resources;
 
 import java.util.Map;
-import org.springframework.hateoas.ResourceSupport;
 
 /**
  *
  * @author Matt Debont
  */
-public class Report extends ResourceSupport {
+public class Report extends Base {
     private String wkt;
     private String locality;
     private Map<String, Map<String, String>> data;
