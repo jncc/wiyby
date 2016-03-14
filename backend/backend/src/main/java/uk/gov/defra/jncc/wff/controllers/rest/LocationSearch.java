@@ -9,17 +9,22 @@ import uk.gov.defra.jncc.wff.services.OsLocationParserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.defra.jncc.wff.resources.BoundingBox;
+import uk.gov.defra.jncc.wff.resources.Location;
+import uk.gov.defra.jncc.wff.resources.LocationResult;
 import uk.gov.defra.jncc.wff.services.RestClientService;
 
 /**
@@ -41,15 +46,21 @@ public class LocationSearch {
     @ApiOperation(value = "Retrieves all Nitrate Vulnerable Zones", 
         response = String.class, 
         responseContainer = "Page")
-    public HttpEntity<BoundingBox> getPostcodeBBox(
+    public HttpEntity<LocationResult> getLocations(
             @ApiParam(value = "The location query")
-            @RequestParam(name = "postcode", required = true)  String postcode) throws Exception {   
+            @RequestParam(name = "query", required = false)  String query) throws Exception {   
         String apiUrl = "https://api.ordnancesurvey.co.uk/opennames/v1/find?query=";
-        String queryUrl = apiUrl + postcode + "&key=" + apiKey;
+        String queryUrl = apiUrl + URLEncoder.encode(query,"UTF-8") + "&key=" + apiKey;
+        
         String jsonResponse = client.Get(queryUrl);
         
-        List<Locations> locations = osLocationParser.GetMachingLocations(jsonResponse, postcode);
+        ArrayList<Location> locations = osLocationParser.GetMachingLocations(jsonResponse, query);
         
-        return BoundingBoxGenerator.GetBoundingBoxFromPoint(xy);
+        LocationResult result = new LocationResult(query, locations);
+        
+
+        return new HttpEntity<>(result);
     }
+    
+
 }

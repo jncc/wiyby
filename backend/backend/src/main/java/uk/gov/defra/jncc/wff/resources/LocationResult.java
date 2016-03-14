@@ -5,20 +5,18 @@
  */
 package uk.gov.defra.jncc.wff.resources;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author felix
  */
-public class Point {
-    public List<Double> coordinates;
-    public String type = "point";
-    
-    public Point(double x, double y) {
-        coordinates = new ArrayList<>();
-        coordinates.add(x);
-        coordinates.add(y);
+public class LocationResult {
+    public String query;
+    public List<Location> locations;
+
+    public LocationResult(String query, List<Location> locations) {
+        this.query = query;
+        this.locations = locations;
     }
 }
