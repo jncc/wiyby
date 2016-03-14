@@ -1,5 +1,6 @@
 package uk.gov.defra.jncc.wff.resources;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -7,14 +8,14 @@ import java.util.Map;
  * @author Matt Debont
  */
 public class Report extends Base {
-    private String wkt;
-    private String locality;
-    private Map<String, Map<String, String>> data;
+    public String wkt;
+    public String locality;
+    public List<Map<String, String>> data;
 
     public Report() {
     }
    
-    public Report(String wkt, String locality, Map<String, Map<String, String>> data) {
+    public Report(String wkt, String locality, List<Map<String, String>> data) {
         this.wkt = wkt;
         this.locality = locality;
         this.data = data;
@@ -36,11 +37,11 @@ public class Report extends Base {
         this.locality = locality;
     }
 
-    public Map<String, Map<String, String>> getData() {
+    public List<Map<String, String>> getData() {
         return data;
     }
 
-    public void setData(Map<String, Map<String, String>> data) {
+    public void setData( List<Map<String, String>> data) {
         this.data = data;
     }    
 }

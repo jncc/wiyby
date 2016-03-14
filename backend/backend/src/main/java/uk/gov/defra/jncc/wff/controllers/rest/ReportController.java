@@ -7,10 +7,7 @@ import com.vividsolutions.jts.io.ParseException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,10 +22,8 @@ import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;
 import uk.gov.defra.jncc.wff.crud.predicate.builders.AttributedZonePredicateBuilder;
 import uk.gov.defra.jncc.wff.crud.predicate.parameters.AttributedZoneParameters;
 import uk.gov.defra.jncc.wff.crud.repository.AttributedZoneRepository;
-import uk.gov.defra.jncc.wff.resources.NvzResource;
 import uk.gov.defra.jncc.wff.resources.Report;
 import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
-import uk.gov.defra.jncc.wff.resources.statics.FakeData;
 
 /**
  *
@@ -60,7 +55,7 @@ public class ReportController {
         try {
             BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);
             Iterable<AttributedZone> zones = attributedZoneRepository.findAll(predicates);
-            ReportAssembler assembler = new ReportAssembler();
+            ReportAssembler assembler = new ReportAssembler(wkt, wkt);
             resource = assembler.toResource(zones);
         } catch (ParseException ex) {
             resource.addError("wkt_parser_err", ex.getLocalizedMessage());

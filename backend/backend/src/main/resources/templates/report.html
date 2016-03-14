@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>WIYBY For Farmers Report</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+    </head>
+    <body>
+        <h1>WIYBY For Farmers</h1>
+        <h2 th:text="'Report for ' + ${resource.locality}"></h2>
+        <div id="map" style="height: 400px; width:800px;" th:attr="data-geojson=${resource.wkt}"></div>
+        <div>
+            <h2 style="background: black; color: white; padding: 5px;">Legal Requirements:</h2>
+            <div th:each="rule : ${resource.data}">
+                <div th:switch="${rule.Type}">
+                    <div th:case="'Statutory'">
+                        <h3 th:text="${rule.Heading}"></h3>
+                        <p th:utext="${rule.Text}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2 style="background: black; color: white; padding: 5px;">Recommended Actions:</h2>
+            <div th:each="rule : ${resource.data}">
+                <div th:switch="${rule.Type}">
+                    <div th:case="'Recommended'">
+                        <h3 th:text="${rule.Heading}"></h3>
+                        <p th:utext="${rule.Text}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            disableMapInteraction = function (map)
+            {
+                map.dragging.disable();
+                map.touchZoom.disable();
+                map.doubleClickZoom.disable();
+                map.scrollWheelZoom.disable();
+                map.boxZoom.disable();
+                map.keyboard.disable();
+                if (map.tap)
+                    map.tap.disable();
+            };
+
+            var map = L.map('map', {zoomControl: false, scrollWheelZoom: false});
+
+            disableMapInteraction(map);
+
+            L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
+            }).addTo(map);
+
+
+            var geojson = /*[[${resource.wkt}]]*/ null;
+            geojson = eval("(" + geojson + ")");
+
+            var polygon = L.geoJson(geojson);
+            polygon.addTo(map);
+            map.fitBounds(polygon.getBounds());
+            /*]]>*/
+        </script>        
+    </body>
+</html>
+
