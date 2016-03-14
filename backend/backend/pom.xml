@@ -115,7 +115,27 @@
             <groupId>uk.gov.defra.jncc.wff</groupId>
             <artifactId>crud</artifactId>
             <version>0.1-SNAPSHOT</version>
-        </dependency>      
+        </dependency>
+        <!-- Apache http cleint -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+        </dependency>
+         
+        <!--Jackson-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+
+            
         
     </dependencies>
 	
