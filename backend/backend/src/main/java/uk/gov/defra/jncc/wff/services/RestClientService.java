@@ -31,8 +31,6 @@ public class RestClientService {
         try {
             HttpGet httpget = new HttpGet(queryUrl);
 
-            System.out.println("Executing request " + httpget.getRequestLine());
-
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
