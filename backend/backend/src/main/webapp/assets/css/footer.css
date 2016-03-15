@@ -206,12 +206,12 @@ a.crown-link:focus {
   height: 17px;
   overflow: hidden;
   text-indent: -999em;
-  background: url(assets/images/govuk/open-government-licence.png) 0 0 no-repeat;
+  background: url(../images/govuk/open-government-licence.png) 0 0 no-repeat;
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
   #footer .footer-meta .footer-meta-inner .open-government-licence .logo a {
-    background-image: url(assets/images/govuk/open-government-licence.png);
+    background-image: url(../images/govuk/open-government-licence.png);
     background-size: 41px 17px;
   }
 }
