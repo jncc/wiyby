@@ -29,7 +29,7 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 public class ReportWebController {
     @Autowired AttributedZoneRepository attributedZoneRepository;
     
-    @RequestMapping("/rep")
+    @RequestMapping("/web/report")
     public String generateReport(
             @RequestParam(value="wkt", required=true) String wkt,
             @RequestParam(value="locality", required=false) String locality, 
@@ -39,15 +39,15 @@ public class ReportWebController {
 
         Report resource;
         
+        String geojson = attributedZoneRepository.getGeoJSON(wkt);
         if (locality == null || locality.isEmpty()) {
-            String geojson = attributedZoneRepository.getGeoJSON(wkt);
             locality = geojson;
         }
 
         try {
             BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);
             Iterable<AttributedZone> zones = attributedZoneRepository.findAll(predicates);
-            ReportAssembler assembler = new ReportAssembler(locality, locality);
+            ReportAssembler assembler = new ReportAssembler(geojson, locality);
             resource = assembler.toResource(zones);
             
         } catch (ParseException ex) {
