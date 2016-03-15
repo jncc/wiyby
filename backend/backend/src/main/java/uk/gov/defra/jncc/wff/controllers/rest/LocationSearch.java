@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.defra.jncc.wff.resources.Location;
 import uk.gov.defra.jncc.wff.resources.LocationResult;
+import uk.gov.defra.jncc.wff.resources.statics.OSKeys;
 import uk.gov.defra.jncc.wff.services.RestClientService;
 
 /**
@@ -39,8 +40,6 @@ public class LocationSearch {
     @Autowired RestClientService client;
     @Autowired OsLocationParserService osLocationParser;
     
-    private String apiKey = "W5gqiwe3T12gso3dnpGxABtfPyC0WJfb";    
-    
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves all Nitrate Vulnerable Zones", 
@@ -50,7 +49,7 @@ public class LocationSearch {
             @ApiParam(value = "The location query")
             @RequestParam(name = "query", required = false)  String query) throws Exception {   
         String apiUrl = "https://api.ordnancesurvey.co.uk/opennames/v1/find?query=";
-        String queryUrl = apiUrl + URLEncoder.encode(query,"UTF-8") + "&key=" + apiKey;
+        String queryUrl = apiUrl + URLEncoder.encode(query,"UTF-8") + "&key=" + OSKeys.OS_NAMES_KEY;
         
         String jsonResponse = client.Get(queryUrl);
         
