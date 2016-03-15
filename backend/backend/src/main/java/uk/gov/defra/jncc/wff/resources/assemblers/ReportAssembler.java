@@ -129,7 +129,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                 )));
             } else {
                 String codeText = mapCodesToText(codeOutputs.get("SGZ_SW"));
-                String urls = zoneOutputs.get("SGZ_SW").stream().map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br />"));
+                String urls = zoneOutputs.get("SGZ_SW").stream().filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty()).map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br />"));
                 finalList.add(Collections.unmodifiableMap(Stream.of(
                         new SimpleEntry<>("Rule", "SGZ_SW"),
                         new SimpleEntry<>("Type", "Recommended"),
