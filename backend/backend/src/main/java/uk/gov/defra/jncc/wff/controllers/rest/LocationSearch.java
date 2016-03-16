@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.defra.jncc.wff.resources.Location;
 import uk.gov.defra.jncc.wff.resources.LocationResult;
 import uk.gov.defra.jncc.wff.resources.statics.OSKeys;
+import uk.gov.defra.jncc.wff.services.ReprojectionService;
 import uk.gov.defra.jncc.wff.services.RestClientService;
 
 /**
@@ -42,6 +43,7 @@ import uk.gov.defra.jncc.wff.services.RestClientService;
 public class LocationSearch {
     @Autowired RestClientService client;
     @Autowired OsLocationParserService osLocationParser;
+    @Autowired ReprojectionService reprojector;
     
     @ResponseBody
     @RequestMapping(path = "/name/{query}", method = RequestMethod.GET)
@@ -50,7 +52,7 @@ public class LocationSearch {
         responseContainer = "Page")
     public ResponseEntity<LocationResult> getLocationByName(
             @ApiParam(value = "The location query")
-            @PathVariable("query")  String query) throws Exception {   
+            @RequestParam(name = "query")  String query) throws Exception {   
         String apiUrl = "https://api.ordnancesurvey.co.uk/opennames/v1/find?query=";
         String queryUrl = apiUrl + URLEncoder.encode(query,"UTF-8") + "&key=" + OSKeys.OS_NAMES_KEY;
         String jsonResponse = "";
@@ -72,18 +74,26 @@ public class LocationSearch {
     }
     
     @ResponseBody
-    @RequestMapping(path = "/bbox", method = RequestMethod.GET)
+    @RequestMapping(path = "/bbox/{bbox}", method = RequestMethod.GET)
     @ApiOperation(value = "Location search", 
         response = String.class, 
         responseContainer = "Page")
     public HttpEntity<LocationResult> getLocationByBbox(
             @ApiParam(value = "The location query")
-            @RequestParam(name = "bbox", required = false)  String bbox) throws Exception {   
+            @RequestParam(name = "bbox")  String bbox,
+            @ApiParam(value = "The SRS of the bounding box")
+            @RequestParam(name = "srs", required = false) int srs) throws Exception {   
         String apiUrl = "https://api.ordnancesurvey.co.uk/places/v1/addresses/bbox?bbox=";
+        
+        if (srs == 0) srs = 4326;
+        
+        String osBbox = reprojector.ReprojectBbox(bbox, srs);
         
         throw new Exception("blarg");
         
     }
+    
+    
     
     
     
