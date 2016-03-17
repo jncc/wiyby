@@ -3,8 +3,11 @@
     <head>
         <title>WIYBY For Farmers Report</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
-        <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+        <!--        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+                <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>-->
+
+        <link rel="stylesheet" th:href="@{/assets/leaflet/leaflet.css}" />
+        <script th:src="@{/assets/leaflet/leaflet.js}"></script>
 
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
@@ -51,13 +54,19 @@
             <div>
                 <h1 class="govuk-title">WIYBY For Farmers</h1>
             </div>
-            
+
             <div>
                 <h2 th:text="'Report for ' + ${resource.locality}"></h2>
-                <div id="map" style="height: 400px; width:600px;" th:attr="data-geojson=${resource.wkt}"></div>
-<!--                <div id="minimap" style="height: 400px; width:600px;" th:attr="data-geojson=${resource.wkt}"></div>-->
-                <br />
                 <div>
+                    <div class="grid-row column-two-thirds">
+                        <div id="map" style="height: 300px; width:100%;" th:attr="data-geojson=${resource.wkt}"></div>
+                    </div>
+                    <div class="grid-row column-third" style="float: right;">
+                        <div id="minimap" style="height: 150px; width:100%;" th:attr="data-geojson=${resource.wkt}"></div>
+                    </div>
+                </div>
+                <br />
+                <div style="clear: both; padding-top: 10px;">
                     <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal Requirements:</h2>
                     <div th:each="rule : ${resource.data}">
                         <div th:switch="${rule.Type}">
@@ -132,29 +141,29 @@
             disableMapInteraction(map);
             disableMapInteraction(minimap);
 
-            L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
+            L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key=***REMOVED***', {
                 attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
             }).addTo(map);
-            
-//            L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
-//            }).addTo(minimap);
+
+            L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key=***REMOVED***', {
+            }).addTo(minimap);
 
 
             var geojson = /*[[${resource.wkt}]]*/ null;
             geojson = eval("(" + geojson + ")");
-            
+
             var wfd_geojson = /*[[${wfd_catchment}]]*/ null;
             wfd_geojson = eval("(" + wfd_geojson + ")");
 
             var polygon = L.geoJson(geojson);
-            //var wfd_polygon = L.geoJson(wfd_geojson);
-            
+            var wfd_polygon = L.geoJson(wfd_geojson);
+
             polygon.addTo(map);
             map.fitBounds(polygon.getBounds());
-            
-//            polygon.addTo(minimap);
-//            wfd_polygon.addTo(minimap);
-//            minimap.fitBounds(wfd_polygon.getBounds());
+
+            polygon.addTo(minimap);
+            wfd_polygon.addTo(minimap);
+            minimap.fitBounds(wfd_polygon.getBounds());
             /*]]>*/
         </script>        
     </body>

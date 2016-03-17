@@ -54,6 +54,7 @@ public class WFSController {
             StringWriter writer = new StringWriter();
 
             json.writeFeatureCollection(geoms, writer);
+            //json.writeFeature(geoms.features().next(), writer);
             return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
         }
 

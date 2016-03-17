@@ -2,14 +2,10 @@
  */
 package uk.gov.defra.jncc.wff.services;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.io.gml2.GMLReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +21,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.geotools.GML;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.store.ReprojectingFeatureCollection;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
@@ -78,8 +76,10 @@ public class WFSQueryService {
             //GML gml = new GML(Version.WFS1_0);
             GML gml = new GML(GML.Version.GML2);
             SimpleFeatureCollection collection = gml.decodeFeatureCollection(new ByteArrayInputStream(responseBody.getBytes(StandardCharsets.UTF_8)));
+            
+            ReprojectingFeatureCollection rep = new ReprojectingFeatureCollection(collection, DefaultGeographicCRS.WGS84);
 
-            return collection;
+            return rep;
         }
     }
 }
