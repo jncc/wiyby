@@ -123,8 +123,7 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            disableMapInteraction = function (map)
-            {
+            disableMapInteraction = function (map) {
                 map.dragging.disable();
                 map.touchZoom.disable();
                 map.doubleClickZoom.disable();
@@ -148,14 +147,19 @@
             L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key=***REMOVED***', {
             }).addTo(minimap);
 
-
             var geojson = /*[[${resource.wkt}]]*/ null;
             geojson = eval("(" + geojson + ")");
 
             var wfd_geojson = /*[[${wfd_catchment}]]*/ null;
             wfd_geojson = eval("(" + wfd_geojson + ")");
 
-            var polygon = L.geoJson(geojson);
+            var polygon = L.geoJson(geojson, {
+                style: {
+                    "color": "#ff0000",
+                    "weight": 2,
+                    "opacity": 0.65
+                }
+            });
             var wfd_polygon = L.geoJson(wfd_geojson);
 
             polygon.addTo(map);
