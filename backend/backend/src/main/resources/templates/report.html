@@ -51,10 +51,11 @@
             <div>
                 <h1 class="govuk-title">WIYBY For Farmers</h1>
             </div>
-
+            
             <div>
                 <h2 th:text="'Report for ' + ${resource.locality}"></h2>
-                <div id="map" style="height: 400px; width:800px;" th:attr="data-geojson=${resource.wkt}"></div>
+                <div id="map" style="height: 400px; width:600px;" th:attr="data-geojson=${resource.wkt}"></div>
+                <div id="minimap" style="height: 400px; width:600px;" th:attr="data-geojson=${resource.wkt}"></div>
                 <br />
                 <div>
                     <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal Requirements:</h2>
@@ -126,20 +127,34 @@
             };
 
             var map = L.map('map', {zoomControl: false, scrollWheelZoom: false});
+            var minimap = L.map('minimap', {zoomControl: false, scrollWheelZoom: false});
 
             disableMapInteraction(map);
+            disableMapInteraction(minimap);
 
             L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
                 attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
             }).addTo(map);
+            
+            L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
+            }).addTo(minimap);
 
 
             var geojson = /*[[${resource.wkt}]]*/ null;
             geojson = eval("(" + geojson + ")");
+            
+            var wfd_geojson = /*[[${wfd_catchment}]]*/ null;
+            wfd_geojson = eval("(" + wfd_geojson + ")");
 
             var polygon = L.geoJson(geojson);
+            var wfd_polygon = L.geoJson(wfd_geojson);
+            
             polygon.addTo(map);
             map.fitBounds(polygon.getBounds());
+            
+            polygon.addTo(minimap);
+            wfd_polygon.addTo(minimap);
+            minimap.fitBounds(wfd_polygon.getBounds());
             /*]]>*/
         </script>        
     </body>

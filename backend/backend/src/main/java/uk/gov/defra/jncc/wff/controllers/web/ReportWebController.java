@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.gov.defra.jncc.wff.controllers.rest.WFSController;
 import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;
 import uk.gov.defra.jncc.wff.crud.predicate.builders.AttributedZonePredicateBuilder;
 import uk.gov.defra.jncc.wff.crud.predicate.parameters.AttributedZoneParameters;
@@ -28,12 +29,13 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 @Controller
 public class ReportWebController {
     @Autowired AttributedZoneRepository attributedZoneRepository;
+    @Autowired WFSController wfsController;
     
     @RequestMapping("/web/report")
     public String generateReport(
             @RequestParam(value="wkt", required=true) String wkt,
             @RequestParam(value="locality", required=false) String locality, 
-            Model model) {
+            Model model) throws Exception {
         AttributedZoneParameters azparams = new AttributedZoneParameters();
         azparams.BoundingBoxWkt = wkt;
 
@@ -56,6 +58,7 @@ public class ReportWebController {
         }
 
         model.addAttribute("resource", resource);
+        model.addAttribute("wfd_catchment", wfsController.getLocations(wkt).getBody());
 
         return "report";
     }
