@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>WIYBY For Farmers Report</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+        <!--
+                <link rel="stylesheet" th:href="@{/assets/leaflet/leaflet.css}" />
+                <script th:src="@{/assets/leaflet/leaflet.js}"></script>
+                <link rel="stylesheet" th:href="@{/assets/leaflet.draw/leaflet.draw.css}" />
+                <script th:src="@{/assets/leaflet.draw/leaflet.draw.js}"></script>-->
+
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/header.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/footer.css}" />
+    </head>
+    <body>
+        <div>
+            <header role="banner" id="global-header" class="">
+                <div class="header-wrapper">
+                    <div class="header-global">
+                        <div class="header-logo">
+                            <a href="https://www.gov.uk" title="Go to the GOV.UK homepage" id="logo" class="content">
+                                <img style="visibility: visible;" th:src="@{/assets/images/govuk/gov.uk_logotype_crown.png}" width="40" height="31" alt="" /> GOV.UK
+                            </a>
+                        </div>
+                    </div>
+                    <div class="header-proposition" ng-controller="NavbarCtrl">
+                        <div class="content">
+                            <nav id="proposition-menu">
+                                <a href="/#/" id="proposition-name">WIYBY For Farmers</a>
+                            </nav>
+                        </div>
+                    </div>                
+                </div>
+            </header>     
+        </div>
+
+        <main id="header">
+            <div id="global-header-bar"></div>
+            <div class="phase-banner" style="padding-left:10px">
+                <p>
+                    <strong class="phase-tag">ALPHA</strong>
+                    <span>This is a new service – your <a href="/#/feedback">feedback</a> will help us to improve it.</span>
+                </p>
+            </div>             
+            <div>
+                <h1 class="govuk-title">WIYBY For Farmers</h1>
+            </div>
+        </main>
+
+        <main id="content" role="main">
+            <div>
+                <div id="map" style="height: 600px; width:100%;"></div>
+            </div>
+        </main>
+
+        <div>
+            <footer id="footer">
+                <div class="footer-wrapper">
+                    <div class="footer-meta">
+                        <div class="footer-meta-inner">
+                            <h2 class="visuallyhidden">Support links</h2>
+                            <ul>
+                                <li><a href="/#/help">Help</a></li>
+                                <li><a href="/#/help#cookies">Cookies</a></li>
+                                <li><a href="/#/feedback">Contact</a></li>
+                                <li><a href="/#/terms">Terms and conditions</a></li>
+                                <li>Built by <a class="external-link" href="https://jncc.defra.gov.uk">JNCC</a></li>
+                            </ul>
+                            <!--                            <div class="open-government-licence">
+                                                            <p class="logo"><a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a></p>
+                                                            <p>All content is available under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence v3.0</a>, except where otherwise stated</p>
+                                                        </div>-->
+                        </div>
+
+                        <div class="copyright">
+                            <a class="crown-link" href="http://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">© Crown copyright</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>        
+        </div>        
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var map = L.map('map', {});
+
+            var base = L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
+                attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
+            }).addTo(map);
+
+            var wms = {
+                "Nitrate Vulnerable Zones": L.tileLayer.wms("http://52.31.39.116/geoserver/ows?service=wms&version=1.3.0", {
+                    layers: 'wiyby:nvz_2013',
+                    format: 'image/png',
+                    transparent: true
+                }).addTo(map),
+                "Surface Water Safeguard Zones": L.tileLayer.wms("http://52.31.39.116/geoserver/ows?service=wms&version=1.3.0", {
+                    layers: 'sw_drw_pa_sgz',
+                    format: 'image/png',
+                    transparent: true
+                }).addTo(map),
+                "Ground Water Safeguard Zones": L.tileLayer.wms("http://52.31.39.116/geoserver/ows?service=wms&version=1.3.0", {
+                    layers: 'gw_drw_sgz_v3',
+                    format: 'image/png',
+                    transparent: true
+                }).addTo(map)
+            };
+
+            L.control.layers({"OS Basemap": base}, wms).addTo(map);
+
+            var editableLayers = new L.FeatureGroup();
+            map.addLayer(editableLayers);
+
+            var options = {
+                position: 'topleft',
+                draw: {
+                    polyline: false,
+                    circle: {
+                        shapeOptions: {
+                            color: '#ff0000'
+                        }
+                    },
+                    marker: false,
+                    polygon: {
+                        allowIntersection: false, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#e1e100', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#ff0000'
+                        }
+                    },
+                    rectangle: {
+                        shapeOptions: {
+                            color: '#ff0000'
+                        }
+                    }
+                },
+                edit: {
+                    featureGroup: editableLayers, //REQUIRED!!
+                    remove: true
+                }
+            };
+
+            var drawControl = new L.Control.Draw(options);
+            map.addControl(drawControl);
+
+            map.on('draw:created', function (e) {
+                var type = e.layerType,
+                        layer = e.layer;
+
+                editableLayers.addLayer(layer);
+            });
+
+            var geojson = /*[[${geojson}]]*/ null;
+            var point = /*[[${point}]]*/ null;
+            var radius = /*[[${radius}]]*/ null;
+
+            if (geojson !== null) {
+                geojson = eval("(" + geojson + ")");
+
+                var polygon = L.geoJson(geojson, {
+                    style: {
+                        "color": "#ff0000",
+                        "weight": 2,
+                        "opacity": 0.65
+                    }
+                });
+
+                for (idx = 0; idx < polygon.getLayers().length; idx++) {
+                    editableLayers.addLayer(polygon.getLayers()[idx]);
+                }
+                var bounds = polygon.getBounds();
+                map.fitBounds(polygon.getBounds());
+            } else if (point !== null && radius !== null) {
+                var polygon = L.circle(point, radius);
+                editableLayers.addLayer(polygon);
+                var bounds = polygon.getBounds();
+                map.fitBounds(polygon.getBounds());
+            } else {
+                var southWest = L.latLng(49.92, -6.02),
+                        northEast = L.latLng(55.91, 1.93),
+                        bounds = L.latLngBounds(southWest, northEast);
+                map.fitBounds(bounds);
+            }
+            /*]]>*/
+        </script>        
+    </body>
+</html>
+
