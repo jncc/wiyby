@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.gov.defra.jncc.wff.controllers.rest.WFSController;
 import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;
 import uk.gov.defra.jncc.wff.crud.predicate.builders.AttributedZonePredicateBuilder;
 import uk.gov.defra.jncc.wff.crud.predicate.parameters.AttributedZoneParameters;
@@ -28,26 +29,27 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 @Controller
 public class ReportWebController {
     @Autowired AttributedZoneRepository attributedZoneRepository;
+    @Autowired WFSController wfsController;
     
-    @RequestMapping("/rep")
+    @RequestMapping("/web/report")
     public String generateReport(
             @RequestParam(value="wkt", required=true) String wkt,
             @RequestParam(value="locality", required=false) String locality, 
-            Model model) {
+            Model model) throws Exception {
         AttributedZoneParameters azparams = new AttributedZoneParameters();
         azparams.BoundingBoxWkt = wkt;
 
         Report resource;
         
+        String geojson = attributedZoneRepository.getGeoJSON(wkt);
         if (locality == null || locality.isEmpty()) {
-            String geojson = attributedZoneRepository.getGeoJSON(wkt);
             locality = geojson;
         }
 
         try {
             BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);
             Iterable<AttributedZone> zones = attributedZoneRepository.findAll(predicates);
-            ReportAssembler assembler = new ReportAssembler(locality, locality);
+            ReportAssembler assembler = new ReportAssembler(geojson, locality);
             resource = assembler.toResource(zones);
             
         } catch (ParseException ex) {
@@ -56,6 +58,7 @@ public class ReportWebController {
         }
 
         model.addAttribute("resource", resource);
+        model.addAttribute("wfd_catchment", wfsController.getLocations(wkt).getBody());
 
         return "report";
     }

@@ -2,6 +2,7 @@ package uk.gov.defra.jncc.wff;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -13,7 +14,9 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @EnableSpringDataWebSupport
 @Profile("default")
 public class BackendApplication {
+
     public static void main(String[] args) {
-            SpringApplication.run(BackendApplication.class, args);
+        SpringApplication.run(BackendApplication.class, args);
     }
+
 }

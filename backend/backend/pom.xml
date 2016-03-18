@@ -36,6 +36,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <geotools.version>13.2</geotools.version>
     </properties>
 
     <dependencies>
@@ -75,7 +76,7 @@
             <version>2.2.2</version>
         </dependency>
         <!-- Database Drivers -->
-     <dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
@@ -134,19 +135,39 @@
             <artifactId>jackson-core</artifactId>
             <version>2.7.2</version>
         </dependency>
-        
-        <!--GeoTools-->
+
+        <!-- GeoTools -->
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt2-epsg-hsql</artifactId>
-            <version>2.4.5</version>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt2-referencing</artifactId>
-            <version>2.4.5</version>
-        </dependency>      
-        
+            <artifactId>gt-referencing</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geometry</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-xml</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
     </dependencies>
 	
     <build>
@@ -156,6 +177,30 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--            <plugin>
+                <groupId>org.jasig.maven</groupId>
+                <artifactId>sass-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <id>package</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>update-stylesheets</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <resources>
+                        <resource>
+                            <source>
+                                <directory>${basedir}/src/main/resources/sass</directory>
+                            </source>
+                            <destination>${project.basedir}/src/main/webapp/resources/stylesheets</destination>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>-->
         </plugins>
     </build>
 	
