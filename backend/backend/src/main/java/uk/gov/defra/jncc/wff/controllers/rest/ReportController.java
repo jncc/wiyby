@@ -42,7 +42,7 @@ public class ReportController {
     @RequestMapping(path = "/search", method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves all Nitrate Vulnerable Zones",
             response = Report.class)
-    public HttpEntity<Report> search(
+    public ResponseEntity<Report> search(
             @ApiParam(value = "A WKT bounding box defined in OSGB (EPSG:4326)")
             @RequestParam(name = "wkt", required = false) String wkt) throws ParseException {
 
