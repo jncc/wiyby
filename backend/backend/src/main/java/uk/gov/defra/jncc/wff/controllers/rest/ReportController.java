@@ -6,6 +6,8 @@ import com.vividsolutions.jts.io.ParseException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;
 import uk.gov.defra.jncc.wff.crud.predicate.builders.AttributedZonePredicateBuilder;
 import uk.gov.defra.jncc.wff.crud.predicate.parameters.AttributedZoneParameters;
 import uk.gov.defra.jncc.wff.crud.repository.AttributedZoneRepository;
+import uk.gov.defra.jncc.wff.resources.Base;
 import uk.gov.defra.jncc.wff.resources.Report;
 import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 
@@ -40,6 +43,10 @@ public class ReportController {
     @RequestMapping(path = "/search", method = RequestMethod.GET)
     @ApiOperation(value = "Generates a report object for a given area, either defined as a WKT polygon or a point and radius in WGS84 (EPSG:4326)",
             response = Report.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully created a report for the give input parameters", response = Report.class),
+        @ApiResponse(code = 400, message = "API was given poorly formated inputs, messages object should contain an error entry with the full error message", response = Base.class)
+    })
     public ResponseEntity<Report> search(
             @ApiParam(value = "A WKT bounding box defined in EPSG:4326")
             @RequestParam(name = "wkt", required = false) String wkt,

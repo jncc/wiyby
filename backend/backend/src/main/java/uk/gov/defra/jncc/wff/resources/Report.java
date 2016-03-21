@@ -1,5 +1,7 @@
 package uk.gov.defra.jncc.wff.resources;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.Map;
 
@@ -7,9 +9,17 @@ import java.util.Map;
  *
  * @author Matt Debont
  */
+@ApiModel("Report Object")
 public class Report extends Base {
+    @ApiModelProperty(value = "A WKT representatation of the area covered by this report", required = false)
     public String wkt;
+    @ApiModelProperty(value = "A human readable approximate location for this report", required = false)
     public String locality;
+    @ApiModelProperty(value = "A List of mappings of matched rules in the form;"
+            + "\"Rule\": \"Rule Matched\",\n" 
+            + "\"Type\": \"Rule Type [statutory | recommended]\",\n"
+            + "\"Heading\", \"Heading text for rule\",\n" 
+            + "\"Text\", \"Text for matched rule\"")
     public List<Map<String, String>> data;
 
     public Report() {
@@ -41,7 +51,7 @@ public class Report extends Base {
         return data;
     }
 
-    public void setData( List<Map<String, String>> data) {
+    public void setData(List<Map<String, String>> data) {
         this.data = data;
     }    
 }
