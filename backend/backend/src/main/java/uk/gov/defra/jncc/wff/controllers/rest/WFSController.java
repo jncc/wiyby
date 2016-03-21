@@ -5,12 +5,18 @@
  */
 package uk.gov.defra.jncc.wff.controllers.rest;
 
+import com.vividsolutions.jts.io.ParseException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
+import javax.xml.parsers.ParserConfigurationException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.xml.sax.SAXException;
 import uk.gov.defra.jncc.wff.resources.statics.WFSHelper;
 import uk.gov.defra.jncc.wff.services.WFSQueryService;
 
@@ -29,9 +36,9 @@ import uk.gov.defra.jncc.wff.services.WFSQueryService;
  * @author felix
  */
 @RestController
-@RequestMapping(path = "/wfs", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/wfs", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
-@Api(value = "/wfs", description = "WFS query controller")
+@Api(value = "/rest/wfs", description = "WFS query controller")
 public class WFSController {
 
     @Autowired
@@ -45,17 +52,21 @@ public class WFSController {
             response = String.class)
     public ResponseEntity<String> getLocations(
             @ApiParam(value = "A WKT definition of the polygon to search for in WGS84")
-            @RequestParam(name = "wkt", required = true) String wkt) throws Exception {
+            @RequestParam(name = "wkt", required = true) String wkt) {
 
-        SimpleFeatureCollection geoms = wfsQueryService.getGeometryForPolygon(WFD_CATCHMENT_URL, WFSHelper.getCoordPairsFromWKT(wkt));
+        try {
+            SimpleFeatureCollection geoms = wfsQueryService.getGeometryForPolygon(WFD_CATCHMENT_URL, WFSHelper.getCoordPairsFromWKT(wkt));
 
-        if (!geoms.isEmpty()) {
-            FeatureJSON json = new FeatureJSON();
-            StringWriter writer = new StringWriter();
+            if (!geoms.isEmpty()) {
+                FeatureJSON json = new FeatureJSON();
+                StringWriter writer = new StringWriter();
 
-            json.writeFeatureCollection(geoms, writer);
-            //json.writeFeature(geoms.features().next(), writer);
-            return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
+                json.writeFeatureCollection(geoms, writer);
+                //json.writeFeature(geoms.features().next(), writer);
+                return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
+            }
+        } catch (IOException|URISyntaxException|SAXException|ParserConfigurationException|ParseException|FactoryException|TransformException ex) {
+            return new ResponseEntity<>("{type: \"FeatureCollection\", crs: {type: \"name\",properties: {name: \"EPSG:27700\"}},features: []}", HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>("{type: \"FeatureCollection\", crs: {type: \"name\",properties: {name: \"EPSG:27700\"}},features: []}", HttpStatus.NO_CONTENT);

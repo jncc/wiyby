@@ -11,4 +11,7 @@ package uk.gov.defra.jncc.wff.crud.predicate.parameters;
  */
 public class AttributedZoneParameters {
     public String BoundingBoxWkt;
+    public Double point_x;
+    public Double point_y;
+    public Double radius;
 }

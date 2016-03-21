@@ -40,23 +40,21 @@
             </header>     
         </div>
 
-        <main id="header">
+        <main id="content" role="main">
             <div id="global-header-bar"></div>
             <div class="phase-banner" style="padding-left:10px">
                 <p>
                     <strong class="phase-tag">ALPHA</strong>
                     <span>This is a new service – your <a href="/#/feedback">feedback</a> will help us to improve it.</span>
                 </p>
-            </div>             
-            <div>
-                <h1 class="govuk-title">WIYBY For Farmers</h1>
-            </div>
-        </main>
-
-        <main id="content" role="main">
+            </div>       
             <div>
                 <div id="map" style="height: 600px; width:100%;"></div>
             </div>
+            <div style="margin-top: 10px;">
+                <a id="generate-report" class="button button-start disabled" style="float: right;" href="" role="button" onclick="return false;">Generate Report For Selected Location</a>
+            </div>
+            <div style="clear:both;"></div>
         </main>
 
         <div>
@@ -88,6 +86,21 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
+            
+            // Generic Remove Class baked into HTML Elements
+            HTMLElement.prototype.removeClass = function (remove) {
+                var newClassName = "";
+                var i;
+                var classes = this.className.split(" ");
+                for (i = 0; i < classes.length; i++) {
+                    if (classes[i] !== remove) {
+                        newClassName += classes[i] + " ";
+                    }
+                }
+                this.className = newClassName;
+            };
+
+            var reportURL = /*[[@{report}]]*/ null;
             var map = L.map('map', {});
 
             var base = L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
@@ -121,11 +134,7 @@
                 position: 'topleft',
                 draw: {
                     polyline: false,
-                    circle: {
-                        shapeOptions: {
-                            color: '#ff0000'
-                        }
-                    },
+                    circle: false,
                     marker: false,
                     polygon: {
                         allowIntersection: false, // Restricts shapes to simple polygons
@@ -144,8 +153,8 @@
                     }
                 },
                 edit: {
-                    featureGroup: editableLayers, //REQUIRED!!
-                    remove: true
+                    featureGroup: editableLayers,
+                    remove: false
                 }
             };
 
@@ -156,12 +165,17 @@
                 var type = e.layerType,
                         layer = e.layer;
 
+                editableLayers.clearLayers();
                 editableLayers.addLayer(layer);
+                wkt = toWKT(layer);
+                updateReportLink(layer);
             });
 
             var geojson = /*[[${geojson}]]*/ null;
-            var point = /*[[${point}]]*/ null;
+            var lat = /*[[${lat}]]*/ null;
+            var long = /*[[${long}]]*/ null;
             var radius = /*[[${radius}]]*/ null;
+            var wkt = "";
 
             if (geojson !== null) {
                 geojson = eval("(" + geojson + ")");
@@ -174,13 +188,12 @@
                     }
                 });
 
-                for (idx = 0; idx < polygon.getLayers().length; idx++) {
-                    editableLayers.addLayer(polygon.getLayers()[idx]);
-                }
-                var bounds = polygon.getBounds();
-                map.fitBounds(polygon.getBounds());
-            } else if (point !== null && radius !== null) {
-                var polygon = L.circle(point, radius);
+                editableLayers.addLayer(polygon.getLayers()[0]);
+                wkt = toWKT(polygon.getLayers()[0]);
+                updateReportLink(polygon.getLayers()[0]);
+                map.fitBounds(polygon.getLayers()[0].getBounds());
+            } else if (lat !== null && long !== null && radius !== null) {
+                var polygon = L.circle(L.latLng(lat, long), radius);
                 editableLayers.addLayer(polygon);
                 var bounds = polygon.getBounds();
                 map.fitBounds(polygon.getBounds());
@@ -189,6 +202,39 @@
                         northEast = L.latLng(55.91, 1.93),
                         bounds = L.latLngBounds(southWest, northEast);
                 map.fitBounds(bounds);
+            }
+
+            function updateReportLink(layer) {
+                document.getElementById("generate-report").href = reportURL + "?wkt=" + toWKT(layer);
+
+                if (document.getElementById("generate-report").onclick !== "") {
+                    document.getElementById("generate-report").onclick = "";
+                    document.getElementById("generate-report").removeClass("disabled");
+                }
+            }
+
+            // https://gist.github.com/bmcbride/4248238
+            function toWKT(layer) {
+                var lng, lat, coords = [];
+                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+                    var latlngs = layer.getLatLngs();
+                    for (var i = 0; i < latlngs.length; i++) {
+                        latlngs[i]
+                        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
+                        if (i === 0) {
+                            lng = latlngs[i].lng;
+                            lat = latlngs[i].lat;
+                        }
+                    }
+                    ;
+                    if (layer instanceof L.Polygon) {
+                        return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
+                    } else if (layer instanceof L.Polyline) {
+                        return "LINESTRING(" + coords.join(",") + ")";
+                    }
+                } else if (layer instanceof L.Marker) {
+                    return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
+                }
             }
             /*]]>*/
         </script>        

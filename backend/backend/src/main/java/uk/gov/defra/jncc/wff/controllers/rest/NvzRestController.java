@@ -38,9 +38,9 @@ import com.vividsolutions.jts.io.ParseException;
  * @author felix
  */
 @RestController
-@RequestMapping(path = "/nvz", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/nvz", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
-@Api(value = "/nvz", description = "Test out nvz spatial queries")
+@Api(value = "/rest/nvz", description = "Test out nvz spatial queries")
 public class NvzRestController {
     @Autowired NitrateVulnerableZoneRepository nvzRepository;
     @Autowired NvzResourceAssembler nvzResourceAssembler;

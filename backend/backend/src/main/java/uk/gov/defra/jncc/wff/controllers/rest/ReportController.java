@@ -1,14 +1,12 @@
 package uk.gov.defra.jncc.wff.controllers.rest;
 
 import com.mysema.query.types.expr.BooleanExpression;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import com.vividsolutions.jts.io.ParseException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +28,9 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
  * @author Matt Debont
  */
 @RestController
-@RequestMapping(path = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/report", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
-@Api(value = "/report", description = "Generates report objects for a given area for use by a frontend application")
+@Api(value = "/rest/report", description = "Generates report objects for a given area for use by a frontend application")
 public class ReportController {
 
     @Autowired
@@ -40,17 +38,33 @@ public class ReportController {
 
     @ResponseBody
     @RequestMapping(path = "/search", method = RequestMethod.GET)
-    @ApiOperation(value = "Retrieves all Nitrate Vulnerable Zones",
+    @ApiOperation(value = "Generates a report object for a given area, either defined as a WKT polygon or a point and radius in WGS84 (EPSG:4326)",
             response = Report.class)
     public ResponseEntity<Report> search(
-            @ApiParam(value = "A WKT bounding box defined in OSGB (EPSG:4326)")
-            @RequestParam(name = "wkt", required = false) String wkt) throws ParseException {
+            @ApiParam(value = "A WKT bounding box defined in EPSG:4326")
+            @RequestParam(name = "wkt", required = false) String wkt,
+            @ApiParam(value = "A Point defined as x,y defined in EPSG:4326")
+            @RequestParam(value = "point", required = false) String point,
+            @ApiParam(value = "A Radius defined in Metres (Default Value of 1km")
+            @RequestParam(value = "radius", required = false, defaultValue = "1000.0") double radius) throws ParseException {
 
         AttributedZoneParameters azparams = new AttributedZoneParameters();
-        azparams.BoundingBoxWkt = wkt;
-
         Report resource = new Report();
         HttpStatus status = HttpStatus.OK;
+
+        if (wkt != null) {
+            azparams.BoundingBoxWkt = wkt;
+        } else if (point != null) {
+            String[] coords = point.split(",");
+            if (coords.length >= 2) {
+                azparams.point_x = Double.parseDouble(coords[0]);   
+                azparams.point_x = Double.parseDouble(coords[1]);   
+                azparams.radius = radius;
+            } else {
+                resource.addError("bad_point", "Point coordinate was ill formed, please supply in the form point=x,y");
+                return new ResponseEntity<>(resource, HttpStatus.BAD_REQUEST);
+            }
+        }
 
         try {
             BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);
@@ -62,17 +76,7 @@ public class ReportController {
             status = HttpStatus.BAD_REQUEST;
         }
 
-        resource.add(linkTo(methodOn(ReportController.class).search(wkt)).withSelfRel());
-
-        return new ResponseEntity<>(resource, status);
-        
-        //ReportAssembler assembler = new ReportAssembler();
-        //Report resource = assembler.toResource(FakeData.case1());
-        //Report resource = assembler.toResource(FakeData.case2());
-        //Report resource = assembler.toResource(FakeData.case3());
-        //Report resource = assembler.toResource(FakeData.case4());
-        //Report resource = assembler.toResource(FakeData.case5());
         //resource.add(linkTo(methodOn(ReportController.class).search(wkt)).withSelfRel());
-        //return new ResponseEntity<>(resource, HttpStatus.OK);
+        return new ResponseEntity<>(resource, status);
     }
 }

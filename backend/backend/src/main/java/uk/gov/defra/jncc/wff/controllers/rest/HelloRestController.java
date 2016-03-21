@@ -20,7 +20,7 @@ import uk.gov.defra.jncc.wff.resources.Hello;
  * @author Matt Debont
  */
 @RestController
-@RequestMapping(path = "/hi", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/hi", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class HelloRestController {
     @ResponseBody
