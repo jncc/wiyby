@@ -143,7 +143,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
 
         if (codeOutputs.containsKey("SGZ_GW")) {
             String codeText = mapCodesToText(codeOutputs.get("SGZ_GW"));
-            String urls = zoneOutputs.get("SGZ_GW").stream().filter((e) -> e.getUrl() != null && ! e.getUrl().isEmpty()).map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br/>"));
+            String urls = zoneOutputs.get("SGZ_GW").stream().map((e) -> gwContactLink(e)).collect(Collectors.joining("<br/>"));
             finalList.add(Collections.unmodifiableMap(Stream.of(
                     new SimpleEntry<>("Rule", "SGZ_GW"),
                     new SimpleEntry<>("Type", "Recommended"),
@@ -175,5 +175,13 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+    
+    private String gwContactLink(AttributedZone zone) {
+        if (zone.getUrl() != null && !zone.getUrl().isEmpty()) {
+            return String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", zone.getUrl(), zone.getName());
+        } else {
+            return zone.getAlt();
+        }
     }
 }

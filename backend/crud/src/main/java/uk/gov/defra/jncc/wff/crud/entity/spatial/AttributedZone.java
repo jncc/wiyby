@@ -19,6 +19,7 @@ public class AttributedZone implements Serializable {
     private String id;
     private String name;
     private String type;
+    private String alt;
     private String url;
     private String attributes;
    
@@ -65,6 +66,14 @@ public class AttributedZone implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getAlt() {
+        return alt;
+    }
+
+    public void setAlt(String alt) {
+        this.alt = alt;
     }
 
     public String getUrl() {

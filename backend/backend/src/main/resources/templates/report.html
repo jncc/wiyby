@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>WIYBY For Farmers Report</title>
+        <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>--> 
@@ -29,7 +29,7 @@
                         <div class="content">
                             <!--                            <a href="#proposition-links" class="js-header-toggle menu">Menu</a>-->
                             <nav id="proposition-menu">
-                                <a href="/#/" id="proposition-name">WIYBY For Farmers</a>
+                                <a th:href="@{/}" id="proposition-name">Environmental impacts for farms</a>
                             </nav>
                         </div>
                     </div>                
@@ -42,12 +42,9 @@
             <div class="phase-banner" style="padding-left:10px">
                 <p>
                     <strong class="phase-tag">ALPHA</strong>
-                    <span>This is a new service – your <a href="/#/feedback">feedback</a> will help us to improve it.</span>
+                    <span>This is a new service – your <a th:href="@{/feedback}">feedback</a> will help us to improve it.</span>
                 </p>
             </div>             
-            <div>
-                <h1 class="govuk-title">WIYBY For Farmers</h1>
-            </div>
 
             <div>
                 <h2 th:text="'Report for ' + ${resource.locality}"></h2>
@@ -95,10 +92,10 @@
                         <div class="footer-meta-inner">
                             <h2 class="visuallyhidden">Support links</h2>
                             <ul>
-                                <li><a href="/#/help">Help</a></li>
-                                <li><a href="/#/help#cookies">Cookies</a></li>
-                                <li><a href="/#/feedback">Contact</a></li>
-                                <li><a href="/#/terms">Terms and conditions</a></li>
+                                <li><a th:href="@{/help}">Help</a></li>
+                                <li><a th:href="@{/help#cookies}">Cookies</a></li>
+                                <li><a th:href="@{/feedback}">Contact</a></li>
+                                <li><a th:href="@{/terms}">Terms and conditions</a></li>
                                 <li>Built by <a class="external-link" href="https://jncc.defra.gov.uk">JNCC</a></li>
                             </ul>
                             <!--                            <div class="open-government-licence">
