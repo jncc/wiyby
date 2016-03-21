@@ -5,6 +5,7 @@
  */
 package uk.gov.defra.jncc.wff.services;
 
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,19 +34,22 @@ public class ReprojectionService {
         
         if (elements.length != 4) throw new RuntimeException("invalid bounding box"); 
         
-        double[] xsrc = new double[2];
+        GeometryFactory geomFactory = new GeometryFactory();
         
-        xsrc[0] = Double.parseDouble(elements[0]);
-        xsrc[1] = Double.parseDouble(elements[1]);
         
-        double[] x = ReprojectCoordinate(xsrc, srs);
+        double[] topLeft = new double[2];
         
-        double[] ysrc = new double[2];
+        topLeft[0] = Double.parseDouble(elements[0]);
+        topLeft[1] = Double.parseDouble(elements[1]);
         
-        ysrc[0] = Double.parseDouble(elements[2]);
-        ysrc[1] = Double.parseDouble(elements[3]);
+        double[] x = ReprojectCoordinate(topLeft, srs);
         
-        double[] y = ReprojectCoordinate(ysrc, srs);
+        double[] bottomRight = new double[2];
+        
+        bottomRight[0] = Double.parseDouble(elements[2]);
+        bottomRight[1] = Double.parseDouble(elements[3]);
+        
+        double[] y = ReprojectCoordinate(bottomRight, srs);
         
         return x[0] + "," + x[1] + "," + y[0] + "," + y[1];
     }
@@ -63,8 +67,13 @@ public class ReprojectionService {
         
         MathTransform transformer = new DefaultCoordinateOperationFactory().createOperation(sourceCrs, targetCrs).getMathTransform();
         
-        return transformer.transform(input, input).getCoordinates();
+        double[] result = new double[2];
+        DirectPosition output =  transformer.transform(input, input);
         
+        result[0] = output.getOrdinate(0);
+        result[1] = output.getOrdinate(1);
+        
+        return result;
     }
     
     

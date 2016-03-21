@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.io.StringWriter;
+import java.net.URI;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.defra.jncc.wff.resources.statics.WFSHelper;
+import uk.gov.defra.jncc.wff.services.RestClientService;
 import uk.gov.defra.jncc.wff.services.WFSQueryService;
 
 /**
@@ -36,6 +38,7 @@ public class WFSController {
 
     @Autowired
     WFSQueryService wfsQueryService;
+    @Autowired RestClientService rcs;
 
     private static final String WFD_CATCHMENT_URL = "http://www.geostore.com/OGC/OGCInterface?version=1.1.0&INTERFACE=ENVIRONMENTWFS&LC=40000000000000000000000000000000000000000&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=ea-wfs-eaieaew00160030&SRSNAME=EPSG:27700";
 
@@ -46,8 +49,12 @@ public class WFSController {
     public ResponseEntity<String> getLocations(
             @ApiParam(value = "A WKT definition of the polygon to search for in WGS84")
             @RequestParam(name = "wkt", required = true) String wkt) throws Exception {
-
-        SimpleFeatureCollection geoms = wfsQueryService.getGeometryForPolygon(WFD_CATCHMENT_URL, WFSHelper.getCoordPairsFromWKT(wkt));
+        
+        URI wfsUri = wfsQueryService.getUriForWfs(WFD_CATCHMENT_URL, WFSHelper.getCoordPairsFromWKT(wkt));
+        
+        String rawWfsData = rcs.Get(wfsUri);
+        
+        SimpleFeatureCollection geoms = wfsQueryService.getGeometryForPolygon(rawWfsData);
 
         if (!geoms.isEmpty()) {
             FeatureJSON json = new FeatureJSON();

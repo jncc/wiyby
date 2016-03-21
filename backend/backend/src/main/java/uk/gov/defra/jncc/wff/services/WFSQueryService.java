@@ -49,37 +49,24 @@ public class WFSQueryService {
             + "  </gml:Polygon>\n"
             + " </ogc:Intersects>\n"
             + "</ogc:Filter>";
+    
+    public URI getUriForWfs(String baseWfsUrl, List<String> polygon) throws URISyntaxException
+    {
+        //url = url + "&FILTER=" + POLYGON_FILTER;
+        URIBuilder builder = new URIBuilder(baseWfsUrl);
+        builder.addParameter("FILTER", String.format(POLYGON_FILTER, polygon.stream().collect(Collectors.joining(" "))));
+        return builder.build();
+    }
+    
+    public SimpleFeatureCollection getGeometryForPolygon(String rawWfsResponse) throws IOException, SAXException, ParserConfigurationException {
 
-    public SimpleFeatureCollection getGeometryForPolygon(String url, List<String> polygon) throws IOException, URISyntaxException, SAXException, ParserConfigurationException {
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+        //GML gml = new GML(Version.WFS1_0);
+        GML gml = new GML(GML.Version.GML2);
+        SimpleFeatureCollection collection = gml.decodeFeatureCollection(new ByteArrayInputStream(rawWfsResponse.getBytes(StandardCharsets.UTF_8)));
 
-            //url = url + "&FILTER=" + POLYGON_FILTER;
-            URIBuilder builder = new URIBuilder(url);
-            builder.addParameter("FILTER", String.format(POLYGON_FILTER, polygon.stream().collect(Collectors.joining(" "))));
-            URI uri = builder.build();
+        ReprojectingFeatureCollection rep = new ReprojectingFeatureCollection(collection, DefaultGeographicCRS.WGS84);
 
-            HttpGet httpget = new HttpGet(uri);
-
-            // Create a custom response handler
-            ResponseHandler<String> responseHandler = (final HttpResponse response) -> {
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = response.getEntity();
-                    return entity != null ? EntityUtils.toString(entity) : null;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            };
-
-            String responseBody = httpclient.execute(httpget, responseHandler);
-
-            //GML gml = new GML(Version.WFS1_0);
-            GML gml = new GML(GML.Version.GML2);
-            SimpleFeatureCollection collection = gml.decodeFeatureCollection(new ByteArrayInputStream(responseBody.getBytes(StandardCharsets.UTF_8)));
-            
-            ReprojectingFeatureCollection rep = new ReprojectingFeatureCollection(collection, DefaultGeographicCRS.WGS84);
-
-            return rep;
-        }
+        return rep;
+        
     }
 }
