@@ -57,7 +57,8 @@
                     </div>
                 </div>
                 <br />
-                <div style="clear: both; padding-top: 10px;">
+                <div style="clear: both; padding-top: 10px;"></div>
+                <div th:if="${resource.ruleTypesMatched.containsKey('Statutory')}">
                     <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal Requirements:</h2>
                     <div th:each="rule : ${resource.data}">
                         <div th:switch="${rule.Type}">
@@ -69,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div th:if="${resource.ruleTypesMatched.containsKey('Recommended')}">
                     <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Recommended Actions:</h2>
                     <div th:each="rule : ${resource.data}">
                         <div th:switch="${rule.Type}">

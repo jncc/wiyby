@@ -19,8 +19,10 @@ public class Report extends Base {
             + "\"Rule\": \"Rule Matched\",\n" 
             + "\"Type\": \"Rule Type [statutory | recommended]\",\n"
             + "\"Heading\", \"Heading text for rule\",\n" 
-            + "\"Text\", \"Text for matched rule\"")
+            + "\"Text\", \"Text for matched rule\"", required = true)
     public List<Map<String, String>> data;
+    @ApiModelProperty(value = "A map of rules types matched in this report", required = true)
+    private Map<String, Boolean> ruleTypesMatched;
 
     public Report() {
     }
@@ -54,4 +56,12 @@ public class Report extends Base {
     public void setData(List<Map<String, String>> data) {
         this.data = data;
     }    
+
+    public Map<String, Boolean> getRuleTypesMatched() {
+        return ruleTypesMatched;
+    }
+
+    public void setRuleTypesMatched(Map<String, Boolean> ruleTypesMatched) {
+        this.ruleTypesMatched = ruleTypesMatched;
+    }
 }

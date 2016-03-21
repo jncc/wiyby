@@ -91,7 +91,8 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         });
 
         Report output = new Report();
-        output.setData(applyRules(zoneOutputList, codeOutputList));
+        output.setRuleTypesMatched(new ConcurrentHashMap<>());
+        output.setData(applyRules(zoneOutputList, codeOutputList, output.getRuleTypesMatched()));
 
         if (wkt != null && !wkt.isEmpty() && locality != null && !locality.isEmpty()) {
             output.setWkt(wkt);
@@ -103,7 +104,8 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
 
     private List<Map<String, String>> applyRules(
             Map<String, List<AttributedZone>> zoneOutputs,
-            Map<String, List<String>> codeOutputs) {
+            Map<String, List<String>> codeOutputs,
+            Map<String, Boolean> matchedRuleTypes) {
         List<Map<String, String>> finalList = new ArrayList<>();
 
         if (codeOutputs.containsKey("NVZ")) {
@@ -115,6 +117,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
+            matchedRuleTypes.put("Statutory", true);
         }
 
         if (codeOutputs.containsKey("SGZ_SW")) {
@@ -139,6 +142,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
             }
+            matchedRuleTypes.put("Recommended", true);
         }
 
         if (codeOutputs.containsKey("SGZ_GW")) {
@@ -152,6 +156,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
+            matchedRuleTypes.put("Recommended", true);
         }
 
         if (!codeOutputs.containsKey("NVZ") && !codeOutputs.containsKey("SGZ_GW") && !codeOutputs.containsKey("SGZ_SW")) {
@@ -163,6 +168,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
+            matchedRuleTypes.put("Recommended", true);
         }
 
         return finalList;

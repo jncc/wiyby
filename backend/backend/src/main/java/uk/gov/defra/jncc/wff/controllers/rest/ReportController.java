@@ -40,7 +40,7 @@ public class ReportController {
     AttributedZoneRepository attributedZoneRepository;
 
     @ResponseBody
-    @RequestMapping(path = "/search", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Generates a report object for a given area, either defined as a WKT polygon or a point and radius in WGS84 (EPSG:4326)",
             response = Report.class)
     @ApiResponses(value = {
