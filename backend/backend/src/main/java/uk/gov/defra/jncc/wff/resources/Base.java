@@ -14,7 +14,7 @@ import org.springframework.hateoas.ResourceSupport;
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Base extends ResourceSupport {
-    private static final String ERROR = "error";
+    public static final String ERROR = "error";
     private final Map<String, Map<String, String>> base;
 
     public Base() {
