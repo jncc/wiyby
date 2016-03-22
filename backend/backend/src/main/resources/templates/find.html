@@ -46,20 +46,11 @@
 
         <main id="content" role="main">
             <div>
-                
                 <h1>Find location</h1>
                 <form action="#" th:action="@{/web/location}" th:object="${LocationResult}" method="post">
                     <p><input type="text" th:field="*{query}" /></p>
                     <p><input type="submit" value="Search" /></p>
-                </form>
-                <div>
-                    <h1>Results</h1>
-                    <ul>
-                        <li th:each="location,iterationStatus  : ${locations}">"${location}"</li>
-                    </ul>
-                </div>
-                
-                
+                </form>    
             </div>
         </main>
 

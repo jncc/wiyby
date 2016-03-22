@@ -45,7 +45,7 @@ public class LocationSearch {
     @Autowired ReprojectionService reprojector;
     
     @ResponseBody
-    @RequestMapping(path = "/name/{query}", method = RequestMethod.GET)
+    @RequestMapping(path = "/name", method = RequestMethod.GET)
     @ApiOperation(value = "Location search", 
         response = String.class, 
         responseContainer = "Page")
@@ -77,7 +77,7 @@ public class LocationSearch {
     }
     
     @ResponseBody
-    @RequestMapping(path = "/bbox/{bbox}", method = RequestMethod.GET)
+    @RequestMapping(path = "/bbox", method = RequestMethod.GET)
     @ApiOperation(value = "Location search", 
         response = String.class, 
         responseContainer = "Page")

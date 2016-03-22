@@ -56,7 +56,6 @@ public class LocationController {
                     .limit(5)
                     .collect(Collectors.toList());
 
-            
             LocationResult result = new LocationResult();
             
             result.setQuery(searchResult.getQuery());

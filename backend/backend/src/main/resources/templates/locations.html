@@ -46,14 +46,12 @@
 
         <main id="content" role="main">
             <div>
-                
+               
                 <h1>Matching locations</h1>
                 <ul>
-                    <li th:each="location,iterationStatus  : ${locations}">"${location}"</li>
+                    <li th:each="location : ${LocationResult.locations}">"${location}"</li>
                 </ul>
-                </div>
-                
-                
+                 
             </div>
         </main>
 
