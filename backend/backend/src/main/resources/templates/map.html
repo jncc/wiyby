@@ -86,8 +86,6 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            
-            // Generic Remove Class baked into HTML Elements
             HTMLElement.prototype.removeClass = function (remove) {
                 var newClassName = "";
                 var i;
@@ -103,7 +101,7 @@
             var reportURL = /*[[@{report}]]*/ null;
             var map = L.map('map', {});
 
-            var base = L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key=***REMOVED***', {
+            var base = L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
                 attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
             }).addTo(map);
 
