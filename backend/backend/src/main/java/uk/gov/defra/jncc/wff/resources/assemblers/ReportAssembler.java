@@ -131,8 +131,9 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
             } else {
-                String codeText = mapCodesToText(codeOutputs.get("SGZ_SW"));
-                String urls = zoneOutputs.get("SGZ_SW").stream().filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty()).map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br />"));
+                String codeText = mapCodesToText(codeOutputs.get("SGZ_SW"), "SGZ_SW");
+                //String urls = zoneOutputs.get("SGZ_SW").stream().filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty()).map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br />"));
+                String urls = swUrlsStr(zoneOutputs);
                 finalList.add(Collections.unmodifiableMap(Stream.of(
                         new SimpleEntry<>("Rule", "SGZ_SW"),
                         new SimpleEntry<>("Type", "Recommended"),
@@ -146,7 +147,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         }
 
         if (codeOutputs.containsKey("SGZ_GW")) {
-            String codeText = mapCodesToText(codeOutputs.get("SGZ_GW"));
+            String codeText = mapCodesToText(codeOutputs.get("SGZ_GW"), "SGZ_GW");
             String urls = zoneOutputs.get("SGZ_GW").stream().map((e) -> gwContactLink(e)).collect(Collectors.joining("<br/>"));
             finalList.add(Collections.unmodifiableMap(Stream.of(
                     new SimpleEntry<>("Rule", "SGZ_GW"),
@@ -174,20 +175,53 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         return finalList;
     }
 
-    private String mapCodesToText(List<String> codes) {
-        return codes.stream().collect(Collectors.joining(", "));
-    }
+    private String mapCodesToText(List<String> codes, String rule) {
+        switch (rule) {
+            case "SGZ_GW":
+                return codes.stream().collect(Collectors.joining(", "));
+            case "SGZ_SW":
+                String pesticides = codes.stream().filter((e) -> e.startsWith("Pesticide ")).map((e) -> e.substring(10)).collect(Collectors.joining(", "));
+                String other = codes.stream().filter((e) -> !e.startsWith("Pesticide ")).collect(Collectors.joining(", "));
 
+                String retStr = "";
+
+                if (pesticides != null && !pesticides.isEmpty()) {
+                    retStr = String.format("Pestcides (%s)", pesticides);
+                }
+                if (other != null && !other.isEmpty()) {
+                    if (retStr.isEmpty()) {
+                        retStr = other;
+                    } else {
+                        retStr = String.format("%s and Other Sources of pollutant (%s)", retStr, other);
+                    }
+                }
+                return retStr;
+            default:
+                throw new RuntimeException(String.format("Unrecognised Rule Type - %s", rule));
+        }
+
+    }
+    
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
-    
+
     private String gwContactLink(AttributedZone zone) {
         if (zone.getUrl() != null && !zone.getUrl().isEmpty()) {
             return String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", zone.getUrl(), zone.getName());
         } else {
             return zone.getAlt();
         }
+    }
+    
+    private String swUrlsStr(Map<String, List<AttributedZone>> zoneOutputs) {
+        String urls = zoneOutputs.get("SGZ_SW").stream()
+                .filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty())
+                .filter(distinctByKey((e) -> e.getUrl()))
+                .map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName()))
+                .collect(Collectors.joining("<br />"));
+        
+        return urls;
     }
 }
