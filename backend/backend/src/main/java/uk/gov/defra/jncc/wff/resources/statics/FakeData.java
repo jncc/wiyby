@@ -1,5 +1,3 @@
-/*
- */
 package uk.gov.defra.jncc.wff.resources.statics;
 
 import java.util.ArrayList;
@@ -9,7 +7,8 @@ import java.util.stream.Stream;
 import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;
 
 /**
- *
+ * Fake testing data
+ * 
  * @author Matt Debont
  */
 public class FakeData {

@@ -23,10 +23,10 @@ public class LandingController {
         return "hello";
     }
     
-    @RequestMapping("/rest")
-    public String rest(Model model) {
-        return "hello";
-    }    
+//    @RequestMapping("/rest")
+//    public String rest(Model model) {
+//        return "hello";
+//    }    
 
     @RequestMapping("/feedback")
     public String feedback(Model model) {
