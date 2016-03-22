@@ -3,15 +3,11 @@
     <head>
         <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
-        <!--
-                <link rel="stylesheet" th:href="@{/assets/leaflet/leaflet.css}" />
-                <script th:src="@{/assets/leaflet/leaflet.js}"></script>
-                <link rel="stylesheet" th:href="@{/assets/leaflet.draw/leaflet.draw.css}" />
-                <script th:src="@{/assets/leaflet.draw/leaflet.draw.js}"></script>-->
 
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
@@ -170,9 +166,6 @@
             });
 
             var geojson = /*[[${geojson}]]*/ null;
-            var lat = /*[[${lat}]]*/ null;
-            var long = /*[[${long}]]*/ null;
-            var radius = /*[[${radius}]]*/ null;
             var wkt = "";
 
             if (geojson !== null) {
@@ -190,18 +183,13 @@
                 wkt = toWKT(polygon.getLayers()[0]);
                 updateReportLink(polygon.getLayers()[0]);
                 map.fitBounds(polygon.getLayers()[0].getBounds());
-            } else if (lat !== null && long !== null && radius !== null) {
-                var polygon = L.circle(L.latLng(lat, long), radius);
-                editableLayers.addLayer(polygon);
-                var bounds = polygon.getBounds();
-                map.fitBounds(polygon.getBounds());
             } else {
                 var southWest = L.latLng(49.92, -6.02),
                         northEast = L.latLng(55.91, 1.93),
                         bounds = L.latLngBounds(southWest, northEast);
                 map.fitBounds(bounds);
             }
-
+            
             function updateReportLink(layer) {
                 document.getElementById("generate-report").href = reportURL + "?wkt=" + toWKT(layer);
 
@@ -217,14 +205,13 @@
                 if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
                     var latlngs = layer.getLatLngs();
                     for (var i = 0; i < latlngs.length; i++) {
-                        latlngs[i]
                         coords.push(latlngs[i].lng + " " + latlngs[i].lat);
                         if (i === 0) {
                             lng = latlngs[i].lng;
                             lat = latlngs[i].lat;
                         }
                     }
-                    ;
+                    
                     if (layer instanceof L.Polygon) {
                         return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
                     } else if (layer instanceof L.Polyline) {

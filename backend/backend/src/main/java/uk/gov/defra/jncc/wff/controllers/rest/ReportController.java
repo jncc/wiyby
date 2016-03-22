@@ -41,7 +41,7 @@ public class ReportController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    @ApiOperation(value = "Generates a report object for a given area, either defined as a WKT polygon or a point and radius in WGS84 (EPSG:4326)",
+    @ApiOperation(value = "Generates a report object for a given area, either defined as a WKT polygon in WGS84 (EPSG:4326)",
             response = Report.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully created a report for the give input parameters", response = Report.class),
@@ -49,29 +49,13 @@ public class ReportController {
     })
     public ResponseEntity<Report> search(
             @ApiParam(value = "A WKT bounding box defined in EPSG:4326")
-            @RequestParam(name = "wkt", required = false) String wkt,
-            @ApiParam(value = "A Point defined as x,y defined in EPSG:4326")
-            @RequestParam(value = "point", required = false) String point,
-            @ApiParam(value = "A Radius defined in Metres (Default Value of 1km")
-            @RequestParam(value = "radius", required = false, defaultValue = "1000.0") double radius) throws ParseException {
+            @RequestParam(name = "wkt", required = true) String wkt) throws ParseException {
 
         AttributedZoneParameters azparams = new AttributedZoneParameters();
         Report resource = new Report();
         HttpStatus status = HttpStatus.OK;
 
-        if (wkt != null) {
-            azparams.BoundingBoxWkt = wkt;
-        } else if (point != null) {
-            String[] coords = point.split(",");
-            if (coords.length >= 2) {
-                azparams.point_x = Double.parseDouble(coords[0]);   
-                azparams.point_x = Double.parseDouble(coords[1]);   
-                azparams.radius = radius;
-            } else {
-                resource.addError("bad_point", "Point coordinate was ill formed, please supply in the form point=x,y");
-                return new ResponseEntity<>(resource, HttpStatus.BAD_REQUEST);
-            }
-        }
+        azparams.BoundingBoxWkt = wkt;
 
         try {
             BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);

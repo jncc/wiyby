@@ -35,12 +35,10 @@ public class ReportWebController {
 
     @RequestMapping("/report")
     public String generateReport(
-            @RequestParam(value = "wkt", required = false) String wkt,
-            @RequestParam(value = "point", required = false) String point,
-            @RequestParam(value = "radius", required = false, defaultValue = "1000.0") double radius,
+            @RequestParam(value = "wkt", required = true) String wkt,
             @RequestParam(value = "locality", required = false) String locality,
             Model model) throws Exception {
-        ResponseEntity<Report> httpReport = reportController.search(wkt, point, radius);
+        ResponseEntity<Report> httpReport = reportController.search(wkt);
         if (httpReport.getStatusCode() == HttpStatus.OK) {
             Report resource = httpReport.getBody();
             
