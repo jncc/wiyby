@@ -33,7 +33,7 @@ import uk.gov.defra.jncc.wff.services.WFSQueryService;
 
 /**
  *
- * @author felix
+ * @author Matt Debont
  */
 @RestController
 @RequestMapping(path = "/rest/wfs", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,11 +41,18 @@ import uk.gov.defra.jncc.wff.services.WFSQueryService;
 @Api(value = "/rest/wfs", description = "WFS query controller")
 public class WFSController {
 
-    @Autowired
-    WFSQueryService wfsQueryService;
+    @Autowired WFSQueryService wfsQueryService;
 
+    // URL for the EA WFD WFS service
     private static final String WFD_CATCHMENT_URL = "http://www.geostore.com/OGC/OGCInterface?version=1.1.0&INTERFACE=ENVIRONMENTWFS&LC=40000000000000000000000000000000000000000&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=ea-wfs-eaieaew00160030&SRSNAME=EPSG:27700";
 
+    /**
+     * Retrieves Water Catchment Areas for a given polygon defined in WKT 
+     * (WGS84)
+     * 
+     * @param wkt WKT in WGS84 for a given query area
+     * @return A Collection of geometries matched by the query area in GeoJSON
+     */
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves Water Catchment Areas for a given polygon",
@@ -62,7 +69,6 @@ public class WFSController {
                 StringWriter writer = new StringWriter();
 
                 json.writeFeatureCollection(geoms, writer);
-                //json.writeFeature(geoms.features().next(), writer);
                 return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
             }
         } catch (IOException|URISyntaxException|SAXException|ParserConfigurationException|ParseException|FactoryException|TransformException ex) {

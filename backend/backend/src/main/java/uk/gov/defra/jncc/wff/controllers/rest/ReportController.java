@@ -36,9 +36,15 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 @Api(value = "/rest/report", description = "Generates report objects for a given area for use by a frontend application")
 public class ReportController {
 
-    @Autowired
-    AttributedZoneRepository attributedZoneRepository;
+    @Autowired AttributedZoneRepository attributedZoneRepository;
 
+    /**
+     * Generates an environmental report for a given area defined in WKT (WGS84)
+     *
+     * @param wkt WKT in WGS84 for a given query area
+     * @return A Report object (if no error occurs) or a Base object which 
+     * contains messages
+     */
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Generates a report object for a given area, either defined as a WKT polygon in WGS84 (EPSG:4326)",
@@ -49,7 +55,7 @@ public class ReportController {
     })
     public ResponseEntity<Report> search(
             @ApiParam(value = "A WKT bounding box defined in EPSG:4326")
-            @RequestParam(name = "wkt", required = true) String wkt) throws ParseException {
+            @RequestParam(name = "wkt", required = true) String wkt) {
 
         AttributedZoneParameters azparams = new AttributedZoneParameters();
         Report resource = new Report();
@@ -67,7 +73,6 @@ public class ReportController {
             status = HttpStatus.BAD_REQUEST;
         }
 
-        //resource.add(linkTo(methodOn(ReportController.class).search(wkt)).withSelfRel());
         return new ResponseEntity<>(resource, status);
     }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.gov.defra.jncc.wff.controllers.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.defra.jncc.wff.controllers.rest.ReportController;
 import uk.gov.defra.jncc.wff.controllers.rest.WFSController;
-import uk.gov.defra.jncc.wff.crud.predicate.parameters.AttributedZoneParameters;
 import uk.gov.defra.jncc.wff.crud.repository.AttributedZoneRepository;
 import uk.gov.defra.jncc.wff.resources.Base;
 import uk.gov.defra.jncc.wff.resources.Report;
@@ -33,15 +27,23 @@ public class ReportWebController {
     @Autowired
     ReportController reportController;
 
+    /**
+     * Returns a report page for a given area selected by WKT
+     * 
+     * @param wkt The WKT for the area of this report in WGS84
+     * @param locality Optional Testing parameter
+     * @param model Auto-Injected model parameter
+     * @return A report page or an error page if an error occurred 
+     */
     @RequestMapping("/report")
     public String generateReport(
             @RequestParam(value = "wkt", required = true) String wkt,
             @RequestParam(value = "locality", required = false) String locality,
-            Model model) throws Exception {
+            Model model) {
         ResponseEntity<Report> httpReport = reportController.search(wkt);
         if (httpReport.getStatusCode() == HttpStatus.OK) {
             Report resource = httpReport.getBody();
-            
+
             String geojson = attributedZoneRepository.getGeoJSON(wkt);
             if (locality == null || locality.isEmpty()) {
                 locality = geojson;
@@ -49,7 +51,7 @@ public class ReportWebController {
             } else {
                 resource.setLocality(locality);
             }
-            
+
             resource.setWkt(geojson);
 
             model.addAttribute("resource", resource);
