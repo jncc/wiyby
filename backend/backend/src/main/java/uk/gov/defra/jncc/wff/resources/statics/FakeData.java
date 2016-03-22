@@ -4,7 +4,6 @@ package uk.gov.defra.jncc.wff.resources.statics;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import uk.gov.defra.jncc.wff.crud.entity.spatial.AttributedZone;

@@ -6,19 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Basic resource class to return a report to the frontend or other service
  *
  * @author Matt Debont
  */
 @ApiModel("Report Object")
 public class Report extends Base {
+
     @ApiModelProperty(value = "A WKT representatation of the area covered by this report", required = false)
     public String wkt;
     @ApiModelProperty(value = "A human readable approximate location for this report", required = false)
     public String locality;
     @ApiModelProperty(value = "A List of mappings of matched rules in the form;"
-            + "\"Rule\": \"Rule Matched\",\n" 
+            + "\"Rule\": \"Rule Matched\",\n"
             + "\"Type\": \"Rule Type [statutory | recommended]\",\n"
-            + "\"Heading\", \"Heading text for rule\",\n" 
+            + "\"Heading\", \"Heading text for rule\",\n"
             + "\"Text\", \"Text for matched rule\"", required = true)
     public List<Map<String, String>> data;
     @ApiModelProperty(value = "A map of rules types matched in this report", required = true)
@@ -26,7 +28,7 @@ public class Report extends Base {
 
     public Report() {
     }
-   
+
     public Report(String wkt, String locality, List<Map<String, String>> data) {
         this.wkt = wkt;
         this.locality = locality;
@@ -55,7 +57,7 @@ public class Report extends Base {
 
     public void setData(List<Map<String, String>> data) {
         this.data = data;
-    }    
+    }
 
     public Map<String, Boolean> getRuleTypesMatched() {
         return ruleTypesMatched;
