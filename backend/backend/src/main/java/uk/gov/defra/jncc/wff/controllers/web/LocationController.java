@@ -43,7 +43,7 @@ public class LocationController {
             Model model) throws Exception {
         
         //humm try catch but don't want to reveal error to end user?
-        ResponseEntity<LocationResult> httpSearchResult = locationSearch.getLocationByName(search.getQuery());
+        ResponseEntity<LocationResult> httpSearchResult = locationSearch.getLocation(search.getQuery(), null, 0);
 
         if (httpSearchResult.getStatusCode() == HttpStatus.OK) {
             LocationResult searchResult = httpSearchResult.getBody();

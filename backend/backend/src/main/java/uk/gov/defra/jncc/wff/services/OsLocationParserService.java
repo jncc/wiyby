@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class OsLocationParserService {
     
-    
 
     public ArrayList<Location> GetMachingLocations(String jsonData, String query) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,7 +52,6 @@ public class OsLocationParserService {
     private Location GetLocationFromElement(JsonNode element) {
         JsonNode gzEntry = element.path("GAZETTEER_ENTRY");
         Location location = new Location();
-        
         
         String name = gzEntry.path("NAME1").asText();
         String place = gzEntry.path("POPULATED_PLACE").asText();

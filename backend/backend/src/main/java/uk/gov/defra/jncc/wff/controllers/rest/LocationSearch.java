@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.defra.jncc.wff.resources.Location;
+import uk.gov.defra.jncc.wff.resources.LocationResult;
 import uk.gov.defra.jncc.wff.resources.statics.OSKeys;
 import uk.gov.defra.jncc.wff.services.ReprojectionService;
 import uk.gov.defra.jncc.wff.services.RestClientService;
@@ -36,9 +37,9 @@ import uk.gov.defra.jncc.wff.services.RestClientService;
  * @author felix
  */
 @RestController
-@RequestMapping(path = "/location/search", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/rest/location/search", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
-@Api(value = "/location/search", description = "Location search api")
+@Api(value = "/rest/location/search", description = "Location search api")
 public class LocationSearch {
     @Autowired RestClientService client;
     @Autowired OsLocationParserService osLocationParser;
@@ -49,39 +50,48 @@ public class LocationSearch {
     @ApiOperation(value = "Location search", 
         response = String.class, 
         responseContainer = "Page")
-    public ResponseEntity<uk.gov.defra.jncc.wff.resources.LocationResult> getLocationByName(
+    public ResponseEntity<LocationResult> getLocation(
             @ApiParam(value = "The location query")
-            @RequestParam(name = "query")  String query) throws Exception {   
-        String apiUrl = "https://api.ordnancesurvey.co.uk/opennames/v1/find?query=";
-        String queryUrl = apiUrl + URLEncoder.encode(query,"UTF-8") + "&key=" + OSKeys.OS_NAMES_KEY;
-        String jsonResponse = "";
-        
-        uk.gov.defra.jncc.wff.resources.LocationResult result = new uk.gov.defra.jncc.wff.resources.LocationResult();
-        result.setQuery(query);
+            @RequestParam(name = "query", required = false)  String query,
+            @RequestParam(name = "bbox", required = false)  String bbox,
+            @RequestParam(name = "srs", required = false)  int srs) throws Exception {
+        LocationResult result = new LocationResult();
         
         HttpStatus status = HttpStatus.OK;
         
-        try 
-        {
-            jsonResponse = client.Get(queryUrl);
-            ArrayList<Location> locations = osLocationParser.GetMachingLocations(jsonResponse, query);
-            result.setLocations(locations);
-        }
-        catch (ClientProtocolException e)
-        {
-            result.addError("bad_request", "Invalid location query");
+        if ((query == null && bbox == null) || (query != null && bbox != null)) {
+            result.addError("invalid_search_request", "Either a bounding box or a search query must be specified");
             status = HttpStatus.BAD_REQUEST;
-        }
+        } else if (query != null) {
+            result.setQuery(query);
+            try 
+            {
+                result.setLocations(getLocationsByName(query));
+            }
+            catch (ClientProtocolException e)
+            {
+                result.addError("bad_request", "Invalid location query");
+                status = HttpStatus.BAD_REQUEST;
+            }
 
-        return new ResponseEntity(result, HttpStatus.OK);
+        } else {
+            result.setQuery(bbox);
+            if (srs == 0) srs = 4326;
+            result.setLocations(getLocationsByBbox(bbox,srs));
+        }
+        
+        return new ResponseEntity(result, status);
     }
     
-    @ResponseBody
-    @RequestMapping(path = "/bbox", method = RequestMethod.GET)
-    @ApiOperation(value = "Location search", 
-        response = String.class, 
-        responseContainer = "Page")
-    public HttpEntity<uk.gov.defra.jncc.wff.resources.LocationResult> getLocationByBbox(
+    private List<Location> getLocationsByName(String query) throws Exception {   
+        String apiUrl = "https://api.ordnancesurvey.co.uk/opennames/v1/find?query=";
+        String queryUrl = apiUrl + URLEncoder.encode(query,"UTF-8") + "&key=" + OSKeys.OS_NAMES_KEY;
+     
+        String jsonResponse = client.Get(queryUrl);
+        return osLocationParser.GetMachingLocations(jsonResponse, query);
+    } 
+    
+    private List<Location> getLocationsByBbox(
             @ApiParam(value = "The location query")
             @RequestParam(name = "bbox")  String bbox,
             @ApiParam(value = "The SRS of the bounding box")
@@ -95,10 +105,6 @@ public class LocationSearch {
         throw new Exception("blarg");
         
     }
-    
-    
-    
-    
-    
+      
 
 }
