@@ -49,7 +49,7 @@
                
                 <h1>Matching locations</h1>
                 <ul>
-                    <li th:each="location : ${LocationResult.locations}">"${location}"</li>
+                    <li th:each="location : ${LocationResult.locations}" th:text="${location.name}"></li>
                 </ul>
                  
             </div>
