@@ -153,15 +153,15 @@
             var wfd_polygon = L.geoJson(wfd_geojson);
 
             polygon.addTo(map);
-            map.fitBounds(polygon.getBounds());
+            map.fitBounds(polygon.getBounds(), {padding: [1, 1]});
 
             polygon.addTo(minimap);
             wfd_polygon.addTo(minimap);
             
             if (wfd_geojson.features.length > 0) {
-                minimap.fitBounds(wfd_polygon.getBounds());
+                minimap.fitBounds(wfd_polygon.getBounds(), {padding: [1, 1]});
             } else {
-                minimap.fitBounds(polygon.getBounds());
+                minimap.fitBounds(polygon.getBounds(), {padding: [1, 1]});
             }
             /*]]>*/
         </script>        
