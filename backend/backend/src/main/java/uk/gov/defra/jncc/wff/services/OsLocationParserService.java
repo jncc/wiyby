@@ -51,7 +51,7 @@ public class OsLocationParserService {
         }
         
         //simplify result if exact match on postcode.
-        if (locations.size() > 0 && IsExactPostcodeMatch(query, locations))
+        if (query != "" && locations.size() > 0 && IsExactPostcodeMatch(query, locations))
         {
            ArrayList<Location> singleResult = new ArrayList<>();
            singleResult.add(locations.get(0));

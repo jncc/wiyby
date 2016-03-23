@@ -5,6 +5,7 @@
  */
 package uk.gov.defra.jncc.wff.controllers.rest;
 
+import com.vividsolutions.jts.geom.Envelope;
 import uk.gov.defra.jncc.wff.services.OsLocationParserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.defra.jncc.wff.resources.Location;
 import uk.gov.defra.jncc.wff.resources.LocationResult;
 import uk.gov.defra.jncc.wff.resources.statics.OSKeys;
-import uk.gov.defra.jncc.wff.services.ReprojectionService;
+import uk.gov.defra.jncc.wff.services.EnvelopeGeneratorService;
 import uk.gov.defra.jncc.wff.services.RestClientService;
 
 /**
@@ -43,7 +44,7 @@ import uk.gov.defra.jncc.wff.services.RestClientService;
 public class LocationSearch {
     @Autowired RestClientService client;
     @Autowired OsLocationParserService osLocationParser;
-    @Autowired ReprojectionService reprojector;
+    @Autowired EnvelopeGeneratorService envGenerator;
     
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
@@ -53,13 +54,12 @@ public class LocationSearch {
     public ResponseEntity<LocationResult> getLocation(
             @ApiParam(value = "The location query")
             @RequestParam(name = "query", required = false)  String query,
-            @RequestParam(name = "bbox", required = false)  String bbox,
-            @RequestParam(name = "srs", required = false)  Integer srs) throws Exception {
+            @RequestParam(name = "polygon", required = false)  String polygon) throws Exception {
         LocationResult result = new LocationResult();
         
         HttpStatus status = HttpStatus.OK;
         
-        if ((query == null && bbox == null) || (query != null && bbox != null)) {
+        if ((query == null && polygon == null) || (query != null && polygon != null)) {
             result.addError("invalid_search_request", "Either a bounding box or a search query must be specified");
             status = HttpStatus.BAD_REQUEST;
         } else if (query != null) {
@@ -75,9 +75,8 @@ public class LocationSearch {
             }
 
         } else {
-            result.setQuery(bbox);
-            if (srs == null || srs == 0) srs = 4326;
-            result.setLocations(getLocationsByBbox(bbox,srs));
+            result.setQuery(polygon);
+            result.setLocations(getLocationsByPolygon(polygon));
         }
         
         return new ResponseEntity(result, status);
@@ -91,17 +90,20 @@ public class LocationSearch {
         return osLocationParser.GetMachingLocations(jsonResponse, query);
     } 
     
-    private List<Location> getLocationsByBbox(
-            @ApiParam(value = "The location query")
-            @RequestParam(name = "bbox")  String bbox,
-            @ApiParam(value = "The SRS of the bounding box")
-            @RequestParam(name = "srs", required = false) Integer srs) throws Exception {   
+    private List<Location> getLocationsByPolygon(String polygonWkt) throws Exception {   
         String apiUrl = "https://api.ordnancesurvey.co.uk/places/v1/addresses/bbox?bbox=";
         
-        String osBbox = reprojector.ReprojectBbox(bbox, srs);
+        Envelope env = envGenerator.GetOSEvelopeFromPolygon(polygonWkt);
         
-        throw new Exception("blarg");
+        String minX = String.valueOf(env.getMinX());
+        String minY = String.valueOf(env.getMinY());
+        String maxX = String.valueOf(env.getMaxX());
+        String maxY = String.valueOf(env.getMaxY());
         
+        String queryUrl = apiUrl + minX + "," + minY + "," + maxX + "," + maxY + "&key=" + OSKeys.OS_NAMES_KEY;
+        
+        String jsonResponse = client.Get(queryUrl);
+        return osLocationParser.GetMachingLocations(jsonResponse, "");
     }
       
 
