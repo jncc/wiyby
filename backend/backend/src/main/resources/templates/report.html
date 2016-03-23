@@ -158,7 +158,7 @@
             polygon.addTo(minimap);
             wfd_polygon.addTo(minimap);
             
-            if (wfd_geojson.getLayers().length > 0) {
+            if (wfd_geojson.features.length > 0) {
                 minimap.fitBounds(wfd_polygon.getBounds());
             } else {
                 minimap.fitBounds(polygon.getBounds());
