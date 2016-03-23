@@ -71,10 +71,10 @@ public class WFSController {
                 json.writeFeatureCollection(geoms, writer);
                 return new ResponseEntity<>(writer.toString(), HttpStatus.OK);
             }
-        } catch (IOException|URISyntaxException|SAXException|ParserConfigurationException|ParseException|FactoryException|TransformException ex) {
-            return new ResponseEntity<>("{type: \"FeatureCollection\", crs: {type: \"name\",properties: {name: \"EPSG:27700\"}},features: []}", HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("{type: \"FeatureCollection\", crs: {type: \"name\",properties: {name: \"EPSG:4326\"}},features: []}", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>("{type: \"FeatureCollection\", crs: {type: \"name\",properties: {name: \"EPSG:27700\"}},features: []}", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("{type: \"FeatureCollection\", crs: {type: \"name\",properties: {name: \"EPSG:4326\"}},features: []}", HttpStatus.NO_CONTENT);
     }
 }

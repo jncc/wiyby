@@ -3,8 +3,6 @@
     <head>
         <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>--> 
 
         <link rel="stylesheet" th:href="@{/assets/leaflet/leaflet.css}" />
         <script th:src="@{/assets/leaflet/leaflet.js}"></script>
@@ -27,7 +25,6 @@
                     </div>
                     <div class="header-proposition" ng-controller="NavbarCtrl">
                         <div class="content">
-                            <!--                            <a href="#proposition-links" class="js-header-toggle menu">Menu</a>-->
                             <nav id="proposition-menu">
                                 <a th:href="@{/}" id="proposition-name">Environmental impacts for farms</a>
                             </nav>
@@ -159,7 +156,12 @@
 
             polygon.addTo(minimap);
             wfd_polygon.addTo(minimap);
-            minimap.fitBounds(wfd_polygon.getBounds());
+            
+            if (wfd_geojson.getLayers().length > 0) {
+                minimap.fitBounds(wfd_polygon.getBounds());
+            } else {
+                minimap.fitBounds(polygon.getBounds());
+            }
             /*]]>*/
         </script>        
     </body>
