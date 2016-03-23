@@ -49,7 +49,7 @@ public class LocationController {
             LocationResult searchResult = httpSearchResult.getBody();
 
             if (searchResult.getLocations().size() == 1) {
-                //redirct to map page with sigle result
+                return "redirect:/map?wkt=" + searchResult.getLocations().get(0).wktBbox;
             }
 
             List<Location> topLocations = searchResult.getLocations().stream()
@@ -62,7 +62,7 @@ public class LocationController {
             result.setLocations(topLocations);
             
             model.addAttribute("LocationResult", result);
-
+            
             return "locations";
 
         } else {
