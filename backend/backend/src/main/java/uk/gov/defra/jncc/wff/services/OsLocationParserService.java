@@ -62,11 +62,41 @@ public class OsLocationParserService {
         return locations;
         
     }
-
+    
     private Location GetLocationFromElement(JsonNode element) {
+        //todo what happpens if we have both, would that ever happen
         JsonNode gzEntry = element.path("GAZETTEER_ENTRY");
-        Location location = new Location();
+        JsonNode dpaEntry = element.path("DPA");
         
+        if (!gzEntry.isMissingNode()) {
+            return GetLocationFromGazetterElement(gzEntry);
+        } else if (!dpaEntry.isMissingNode()) {
+            return GetLocationFromDpaElement(dpaEntry);
+        } else {
+            throw new RuntimeException("Unknown Element");
+        }
+    }
+
+    private Location GetLocationFromDpaElement(JsonNode dpaEntry) {
+        Location location = new Location();
+      
+        String uprn = dpaEntry.path("UPRN").asText();
+        String udprn = dpaEntry.path("UDPRN").asText();
+        
+        location.osId = uprn + "/" + udprn;
+        location.name = dpaEntry.path("ADDRESS").asText();
+        double x = dpaEntry.path("X_COORDINATE").asDouble();
+        double y = dpaEntry.path("Y_COORDINATE").asDouble();
+        location.wktCentroid = GetCentroidFromOSPoint(x, y);
+        location.wktBbox = GetBboxFromOSPoint(x, y);
+        
+        return location;
+    }
+    
+    
+    private Location GetLocationFromGazetterElement(JsonNode gzEntry) {
+        Location location = new Location();
+      
         String name = gzEntry.path("NAME1").asText();
         String place = gzEntry.path("POPULATED_PLACE").asText();
         String borough = gzEntry.path("DISTRICT_BOROUGH").asText(); 
@@ -80,6 +110,7 @@ public class OsLocationParserService {
         
         return location;
     }
+    
     
     private boolean IsExactPostcodeMatch(String query, ArrayList<Location> locations)
     {
@@ -120,5 +151,6 @@ public class OsLocationParserService {
         WKTWriter toText = new WKTWriter();
         return toText.write(targetGeom);
     }
-    
+
+
 }
