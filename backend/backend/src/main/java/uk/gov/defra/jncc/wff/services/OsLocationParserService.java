@@ -1,15 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.gov.defra.jncc.wff.services;
 
 import uk.gov.defra.jncc.wff.resources.Location;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -17,10 +10,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.util.Pair;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -38,7 +27,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 @Service
 public class OsLocationParserService {
     
-    private static int ENVELOPE_SCALE_FACTOR = 5;
+    private static final int ENVELOPE_SCALE_FACTOR = 50;
 
     public ArrayList<Location> GetMachingLocations(String jsonData, String query) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
