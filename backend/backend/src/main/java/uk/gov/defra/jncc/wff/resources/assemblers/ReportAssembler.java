@@ -34,7 +34,12 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
     public ReportAssembler(String wkt, String locality) {
         super(ReportController.class, Report.class);
         this.wkt = wkt;
-        this.locality = locality;
+        
+        if (locality != null && !locality.isEmpty()) {
+            this.locality = locality;
+        } else {
+            this.locality = "the highlighted area";
+        }
     }
 
     public String getWkt() {
@@ -126,7 +131,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         new SimpleEntry<>("Rule", "SGZ_SW_NO_RISK"),
                         new SimpleEntry<>("Type", "Recommended"),
                         new SimpleEntry<>("Heading", "This land is in a drinking water catchment which is currently not at risk from any pollutants."),
-                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around %s. It is not currrently at risk, but to keep your drinking water safe please continue to follow best practice<br/>Vist the <a href=\"#\">Best Practice site</a>", this.locality))
+                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is not currrently at risk, but to keep your drinking water safe please continue to follow best practice<br/>Vist the <a href=\"#\">Best Practice site</a>", this.locality))
                 ).collect(
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
@@ -138,7 +143,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         new SimpleEntry<>("Rule", "SGZ_SW"),
                         new SimpleEntry<>("Type", "Recommended"),
                         new SimpleEntry<>("Heading", String.format("This land is within a surface water safeguard zone which protects drinking water from the following %s.", codeText)),
-                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", locality, codeText, urls))
+                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", locality, codeText, urls))
                 ).collect(
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
@@ -153,7 +158,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                     new SimpleEntry<>("Rule", "SGZ_GW"),
                     new SimpleEntry<>("Type", "Recommended"),
                     new SimpleEntry<>("Heading", String.format("This land is within a groundwater safeguard zone which protects drinking water from the following %s.", codeText)),
-                    new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in and around %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", locality, codeText, urls))
+                    new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", locality, codeText, urls))
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));

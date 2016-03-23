@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import uk.gov.defra.jncc.wff.crud.predicate.builders.AttributedZonePredicateBuil
 import uk.gov.defra.jncc.wff.crud.predicate.parameters.AttributedZoneParameters;
 import uk.gov.defra.jncc.wff.crud.repository.AttributedZoneRepository;
 import uk.gov.defra.jncc.wff.resources.Base;
+import uk.gov.defra.jncc.wff.resources.Location;
 import uk.gov.defra.jncc.wff.resources.Report;
 import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 
@@ -37,12 +39,13 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 public class ReportController {
 
     @Autowired AttributedZoneRepository attributedZoneRepository;
+    @Autowired LocationSearch locationSearch;
 
     /**
      * Generates an environmental report for a given area defined in WKT (WGS84)
      *
      * @param wkt WKT in WGS84 for a given query area
-     * @return A Report object (if no error occurs) or a Base object which 
+     * @return A Report object (if no error occurs) or a Base object which
      * contains messages
      */
     @ResponseBody
@@ -56,7 +59,8 @@ public class ReportController {
     public ResponseEntity<Report> search(
             @ApiParam(value = "A WKT bounding box defined in EPSG:4326")
             @RequestParam(name = "wkt", required = true) String wkt) {
-
+        String locality;
+        
         AttributedZoneParameters azparams = new AttributedZoneParameters();
         Report resource = new Report();
         HttpStatus status = HttpStatus.OK;
@@ -64,9 +68,20 @@ public class ReportController {
         azparams.BoundingBoxWkt = wkt;
 
         try {
+            List<Location> locations = locationSearch.getLocation(null, wkt, "centroid").getBody().getLocations();
+            if (locations.size() > 0) {
+                 locality = locations.get(0).name;
+            } else {
+                locality = "";
+            }
+        } catch (Exception ex) {
+            locality = "";
+        }
+
+        try {
             BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);
             Iterable<AttributedZone> zones = attributedZoneRepository.findAll(predicates);
-            ReportAssembler assembler = new ReportAssembler(wkt, wkt);
+            ReportAssembler assembler = new ReportAssembler(wkt, locality);
             resource = assembler.toResource(zones);
         } catch (ParseException ex) {
             resource.addError("wkt_parser_err", ex.getLocalizedMessage());

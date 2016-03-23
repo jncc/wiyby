@@ -38,7 +38,7 @@ public class LocationController {
             Model model) throws Exception {
         
         //humm try catch but don't want to reveal error to end user?
-        ResponseEntity<LocationResult> httpSearchResult = locationSearch.getLocation(search.getQuery(), null, 0);
+        ResponseEntity<LocationResult> httpSearchResult = locationSearch.getLocation(search.getQuery(), null, null);
 
         if (httpSearchResult.getStatusCode() == HttpStatus.OK) {
             LocationResult searchResult = httpSearchResult.getBody();
@@ -52,7 +52,6 @@ public class LocationController {
                     .collect(Collectors.toList());
 
             LocationResult result = new LocationResult();
-            
             result.setQuery(searchResult.getQuery());
             result.setLocations(topLocations);
             
