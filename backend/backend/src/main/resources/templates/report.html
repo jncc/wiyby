@@ -51,7 +51,7 @@
                         <div id="map" style="height: 300px; width:100%;"></div>
                     </div>
                     <div class="grid-row column-third" style="float: right;">
-                        <div id="minimap" style="height: 150px; width:100%;"></div>
+                        <div id="minimap" style="height: 200px; width:100%;"></div>
                     </div>
                 </div>
                 <br />
@@ -131,12 +131,16 @@
             disableMapInteraction(minimap);
 
             L.tileLayer(os_mapping_url, {
-                attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
+                attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016',
+                minZoom: 7,
+                maxZoom: 18
             }).addTo(map);
 
-            L.tileLayer(os_mapping_url, {
-                attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
-            }).addTo(minimap);
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                minZoom: 0,
+                maxZoom: 6
+            }).addTo(map);
 
             var geojson = /*[[${resource.wkt}]]*/ null;
             geojson = eval("(" + geojson + ")");
@@ -165,6 +169,18 @@
                 }
             });
             var wfd_polygon = L.geoJson(wfd_geojson);
+
+            L.tileLayer(os_mapping_url, {
+                attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016',
+                minZoom: 7,
+                maxZoom: 18
+            }).addTo(minimap);
+
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                minZoom: 0,
+                maxZoom: 6
+            }).addTo(minimap);
 
             wfd_polygon.addTo(minimap);
             mini_polygon.addTo(minimap);

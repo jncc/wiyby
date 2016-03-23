@@ -109,7 +109,15 @@
             var map = L.map('map', {});
 
             var base = L.tileLayer(os_mapping_url, {
-                attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
+                attribution: 'Contains Ordnance Survey data &copy; Crown copyright and database right 2016',
+                minZoom: 7,
+                maxZoom: 18
+            }).addTo(map);
+            
+            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                minZoom: 0,
+                maxZoom: 6
             }).addTo(map);
 
             var wms = {
@@ -130,7 +138,7 @@
                 }).addTo(map)
             };
 
-            L.control.layers({"OS Basemap": base}, wms).addTo(map);
+            L.control.layers({}, wms).addTo(map);
 
             var editableLayers = new L.FeatureGroup();
             map.addLayer(editableLayers);
