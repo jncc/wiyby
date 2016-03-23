@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class LandingController {
 
-    @RequestMapping("/")
-    public String hello(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "hello";
-    }
+//    @RequestMapping("/")
+//    public String hello(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
+//        model.addAttribute("name", name);
+//        return "hello";
+//    }
     
 //    @RequestMapping("/rest")
 //    public String rest(Model model) {

@@ -1,2 +1,4 @@
 /backend/crud/target/
 /backend/backend/target/
+/backend/backend/nb-configuration.xml
+/backend/backend/nbactions.xml

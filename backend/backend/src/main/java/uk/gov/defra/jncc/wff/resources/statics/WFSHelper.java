@@ -1,5 +1,3 @@
-/*
- */
 package uk.gov.defra.jncc.wff.resources.statics;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -12,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -25,11 +22,9 @@ import org.opengis.referencing.operation.TransformException;
  */
 public class WFSHelper {
 
-    private static final CoordinateReferenceSystem DEFAULT_SOURCE_SRS = DefaultGeographicCRS.WGS84;
-    private static final String DEFAULT_TARGET_SRS = "EPSG:27700";
 
     public static List<String> getCoordPairsFromWKT(String wkt) throws ParseException, NoSuchAuthorityCodeException, FactoryException, TransformException {
-        return WFSHelper.getCoordPairsFromWKT(wkt, WFSHelper.DEFAULT_SOURCE_SRS, CRS.decode(WFSHelper.DEFAULT_TARGET_SRS));
+        return WFSHelper.getCoordPairsFromWKT(wkt, SpatialHelper.WSG84_SRS, SpatialHelper.getOS_SRS());
     }
 
     public static List<String> getCoordPairsFromWKT(String wkt, CoordinateReferenceSystem s_srs, CoordinateReferenceSystem t_srs) throws ParseException, FactoryException, TransformException {
