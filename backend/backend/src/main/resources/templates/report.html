@@ -144,6 +144,7 @@
             var wfd_geojson = /*[[${wfd_catchment}]]*/ null;
             wfd_geojson = eval("(" + wfd_geojson + ")");
 
+            // Main map polygon
             var polygon = L.geoJson(geojson, {
                 style: {
                     "color": "#ff0000",
@@ -151,18 +152,27 @@
                     "opacity": 0.65
                 }
             });
-            var wfd_polygon = L.geoJson(wfd_geojson);
 
             polygon.addTo(map);
             map.fitBounds(polygon.getBounds(), {padding: [1, 1]});
 
-            polygon.addTo(minimap);
+            // Mini-map polygons
+            var mini_polygon = L.geoJson(geojson, {
+                style: {
+                    "color": "#ff0000",
+                    "weight": 6,
+                    "opacity": 0.65
+                }
+            });
+            var wfd_polygon = L.geoJson(wfd_geojson);
+
             wfd_polygon.addTo(minimap);
-            
+            mini_polygon.addTo(minimap);
+
             if (wfd_geojson.features.length > 0) {
                 minimap.fitBounds(wfd_polygon.getBounds(), {padding: [1, 1]});
             } else {
-                minimap.fitBounds(polygon.getBounds(), {padding: [1, 1]});
+                minimap.fitBounds(mini_polygon.getBounds(), {padding: [1, 1]});
             }
             /*]]>*/
         </script>        
