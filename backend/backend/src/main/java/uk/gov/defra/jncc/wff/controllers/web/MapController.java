@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.defra.jncc.wff.crud.repository.AttributedZoneRepository;
+import uk.gov.defra.jncc.wff.resources.LocationResult;
 
 /**
  *
@@ -43,6 +44,9 @@ public class MapController {
             }
         }
 
+        // Add in model for search box
+        model.addAttribute("LocationResult", new LocationResult());
+        
         return "map";
     }
 }

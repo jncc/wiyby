@@ -10,7 +10,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
 
         <script th:src="@{/assets/js/config.js}" />
-        
+
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/header.css}" />
@@ -51,6 +51,15 @@
             </div>
             <div style="margin-top: 10px;">
                 <a id="generate-report" class="button button-start disabled" style="float: right;" href="" role="button" onclick="return false;">Generate Report For Selected Location</a>
+            </div>
+            <div style="clear:both;"></div>
+            <div style="margin-top: 10px;">
+                <div class="grid-row column-two-thirds">
+                    <h1>Search Again</h1>
+                    <form action="#" th:action="@{/}" th:object="${LocationResult}" method="post">
+                        <p><input class="input-box" style="width:60%; margin-right: 10px" type="text" th:field="*{query}" /><input class="button button-start" type="submit" value="Search" /></p>
+                    </form>    
+                </div>
             </div>
             <div style="clear:both;"></div>
         </main>
@@ -191,7 +200,7 @@
                         bounds = L.latLngBounds(southWest, northEast);
                 map.fitBounds(bounds);
             }
-            
+
             function updateReportLink(layer) {
                 document.getElementById("generate-report").href = reportURL + "?wkt=" + toWKT(layer);
 
@@ -213,7 +222,7 @@
                             lat = latlngs[i].lat;
                         }
                     }
-                    
+
                     if (layer instanceof L.Polygon) {
                         return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
                     } else if (layer instanceof L.Polyline) {
