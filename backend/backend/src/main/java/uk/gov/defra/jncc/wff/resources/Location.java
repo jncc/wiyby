@@ -5,19 +5,14 @@
  */
 package uk.gov.defra.jncc.wff.resources;
 
-import uk.gov.defra.jncc.wff.resources.Centroid;
-
 /**
  *
  * @author felix
  */
 public class Location {
-    public Location()
-    {
-        this.centroid = new Centroid();
-    }
-    
+
+    public String wktCentroid;
     public String osId;
     public String name;
-    public Centroid centroid;
+    public String wktBbox;
 }
