@@ -54,7 +54,7 @@ public class LocationSearch {
             @ApiParam(value = "The location query")
             @RequestParam(name = "query", required = false)  String query,
             @RequestParam(name = "bbox", required = false)  String bbox,
-            @RequestParam(name = "srs", required = false)  int srs) throws Exception {
+            @RequestParam(name = "srs", required = false)  Integer srs) throws Exception {
         LocationResult result = new LocationResult();
         
         HttpStatus status = HttpStatus.OK;
@@ -76,7 +76,7 @@ public class LocationSearch {
 
         } else {
             result.setQuery(bbox);
-            if (srs == 0) srs = 4326;
+            if (srs == null || srs == 0) srs = 4326;
             result.setLocations(getLocationsByBbox(bbox,srs));
         }
         
@@ -95,10 +95,8 @@ public class LocationSearch {
             @ApiParam(value = "The location query")
             @RequestParam(name = "bbox")  String bbox,
             @ApiParam(value = "The SRS of the bounding box")
-            @RequestParam(name = "srs", required = false) int srs) throws Exception {   
+            @RequestParam(name = "srs", required = false) Integer srs) throws Exception {   
         String apiUrl = "https://api.ordnancesurvey.co.uk/places/v1/addresses/bbox?bbox=";
-        
-        if (srs == 0) srs = 4326;
         
         String osBbox = reprojector.ReprojectBbox(bbox, srs);
         
