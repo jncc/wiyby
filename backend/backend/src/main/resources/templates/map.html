@@ -9,6 +9,8 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
 
+        <script th:src="@{/assets/js/config.js}" />
+        
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/header.css}" />
@@ -97,22 +99,22 @@
             var reportURL = /*[[@{report}]]*/ null;
             var map = L.map('map', {});
 
-            var base = L.tileLayer('https://api2.ordnancesurvey.co.uk/mapping_api/v1/service/zxy/EPSG%3A3857/Outdoor 3857/{z}/{x}/{y}.png?key={{{os_map_key}}}', {
+            var base = L.tileLayer(os_mapping_url, {
                 attribution: 'Contains Ordnance Survey data © Crown copyright and database right 2016'
             }).addTo(map);
 
             var wms = {
-                "Nitrate Vulnerable Zones": L.tileLayer.wms("http://52.31.39.116/geoserver/ows?service=wms&version=1.3.0", {
+                "Nitrate Vulnerable Zones": L.tileLayer.wms(local_wms_service_url, {
                     layers: 'wiyby:nvz_2013',
                     format: 'image/png',
                     transparent: true
                 }).addTo(map),
-                "Surface Water Safeguard Zones": L.tileLayer.wms("http://52.31.39.116/geoserver/ows?service=wms&version=1.3.0", {
+                "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
                     layers: 'sw_drw_pa_sgz',
                     format: 'image/png',
                     transparent: true
                 }).addTo(map),
-                "Ground Water Safeguard Zones": L.tileLayer.wms("http://52.31.39.116/geoserver/ows?service=wms&version=1.3.0", {
+                "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
                     layers: 'gw_drw_sgz_v3',
                     format: 'image/png',
                     transparent: true
