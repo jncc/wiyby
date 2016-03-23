@@ -29,8 +29,9 @@ public class MapController {
      * @return The map page or an error page if some error occurs
      */
     @RequestMapping("/map")
-    public String generateReport(
-            @RequestParam(value = "wkt", required = false) String wkt, Model model) {
+    public String map(
+            @RequestParam(value = "wkt", required = false) String wkt, 
+            Model model) {
 
         if (wkt != null && !wkt.isEmpty()) {
             // WKT element provided try and use that
@@ -49,4 +50,9 @@ public class MapController {
         
         return "map";
     }
+    
+    @RequestMapping("/imap")
+    public String interactiveMap(Model model) {
+        return "imap";
+    }    
 }

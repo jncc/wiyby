@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Environmental impacts for farms</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+
+        <script th:src="@{/assets/js/config.js}" />
+        <script th:src="@{/assets/js/leaflet-controls/leaflet-button-control.js}" />
+
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/header.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/footer.css}" />
+    </head>
+    <body style="height: 100%">
+        <div>
+            <header role="banner" id="global-header" class="">
+                <div class="header-wrapper">
+                    <div class="header-global">
+                        <div class="header-logo">
+                            <a href="https://www.gov.uk" title="Go to the GOV.UK homepage" id="logo" class="content">
+                                <img style="visibility: visible;" th:src="@{/assets/images/govuk/gov.uk_logotype_crown.png}" width="40" height="31" alt="" /> GOV.UK
+                            </a>
+                        </div>
+                    </div>
+                    <div class="header-proposition" ng-controller="NavbarCtrl">
+                        <div class="content">
+                            <nav id="proposition-menu">
+                                <a th:href="@{/}" id="proposition-name">Environmental impacts for farms</a>
+                            </nav>
+                        </div>
+                    </div>                
+                </div>
+            </header>     
+        </div>
+
+        <div id="global-header-bar"></div>
+        <div class="phase-banner" style="padding-left:10px">
+            <p>
+                <strong class="phase-tag">ALPHA</strong>
+                <span>This is a new service – your <a th:href="@{/feedback}">feedback</a> will help us to improve it.</span>
+            </p>
+        </div>       
+        <div style="height: calc(100% - 105px)">
+            <div id="map" style="height: 100%; width:100%;"></div>
+        </div>
+        <div style="clear:both;"></div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            HTMLElement.prototype.removeClass = function (remove) {
+                var newClassName = "";
+                var i;
+                var classes = this.className.split(" ");
+                for (i = 0; i < classes.length; i++) {
+                    if (classes[i] !== remove) {
+                        newClassName += classes[i] + " ";
+                    }
+                }
+                this.className = newClassName;
+            };
+
+            var reportURL = /*[[@{report}]]*/ null;
+            var map = L.map('map', {});
+
+            var base = L.tileLayer(os_mapping_url, {
+                attribution: 'Contains Ordnance Survey data &copy; Crown copyright and database right 2016',
+                minZoom: 7,
+                maxZoom: 18
+            }).addTo(map);
+
+            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                minZoom: 0,
+                maxZoom: 6
+            }).addTo(map);
+
+            var wms = {
+                "Nitrate Vulnerable Zones": L.tileLayer.wms(local_wms_service_url, {
+                    layers: 'wiyby:nvz_2013',
+                    format: 'image/png',
+                    transparent: true
+                }).addTo(map),
+                "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
+                    layers: 'sw_drw_pa_sgz',
+                    format: 'image/png',
+                    transparent: true
+                }).addTo(map),
+                "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
+                    layers: 'gw_drw_sgz_v3',
+                    format: 'image/png',
+                    transparent: true
+                }).addTo(map)
+            };
+
+            L.control.layers({}, wms).addTo(map);
+
+            var editableLayers = new L.FeatureGroup();
+            map.addLayer(editableLayers);
+
+            var options = {
+                position: 'topleft',
+                draw: {
+                    polyline: false,
+                    circle: false,
+                    marker: false,
+                    polygon: {
+                        allowIntersection: false, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#e1e100', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#ff0000'
+                        }
+                    },
+                    rectangle: {
+                        shapeOptions: {
+                            color: '#ff0000'
+                        }
+                    }
+                },
+                edit: {
+                    featureGroup: editableLayers,
+                    remove: false
+                }
+            };
+
+            var drawControl = new L.Control.Draw(options);
+            map.addControl(drawControl);
+
+            map.on('draw:created', function (e) {
+                var type = e.layerType,
+                        layer = e.layer;
+
+                editableLayers.clearLayers();
+                editableLayers.addLayer(layer);
+                wkt = toWKT(layer);
+                updateReportLink(layer);
+            });
+
+            var wkt = "";
+
+            var southWest = L.latLng(49.92, -6.02),
+                    northEast = L.latLng(55.91, 1.93),
+                    bounds = L.latLngBounds(southWest, northEast);
+            map.fitBounds(bounds);
+            
+            var endpointReportUrl = "";
+
+            function generateReport() {
+                window.location = endpointReportUrl;
+            }
+
+            var generateButton = undefined;
+
+            function updateReportLink(layer) {
+                endpointReportUrl = reportURL + "?wkt=" + toWKT(layer);
+                
+                if (generateButton !== undefined) {
+                    generateButton.removeFrom(map);
+                }
+                
+                var myButtonOptions = {
+                    'text': 'Generate Report', // string
+                    'onClick': generateReport, // callback function
+                    'hideText': false // bool
+                };
+
+                generateButton = new L.Control.Button(myButtonOptions).addTo(map);
+
+                //document.getElementById("generate-report").href = reportURL + "?wkt=" + toWKT(layer);
+            }
+
+            // https://gist.github.com/bmcbride/4248238
+            function toWKT(layer) {
+                var lng, lat, coords = [];
+                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+                    var latlngs = layer.getLatLngs();
+                    for (var i = 0; i < latlngs.length; i++) {
+                        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
+                        if (i === 0) {
+                            lng = latlngs[i].lng;
+                            lat = latlngs[i].lat;
+                        }
+                    }
+
+                    if (layer instanceof L.Polygon) {
+                        return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
+                    } else if (layer instanceof L.Polyline) {
+                        return "LINESTRING(" + coords.join(",") + ")";
+                    }
+                } else if (layer instanceof L.Marker) {
+                    return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
+                }
+            }
+            /*]]>*/
+        </script>        
+    </body>
+</html>
+
