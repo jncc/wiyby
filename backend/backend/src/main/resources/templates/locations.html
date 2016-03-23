@@ -41,11 +41,7 @@
                 </p>
             </div>             
             <div>
-                <h1 class="govuk-title">WIYBY For Farmers</h1>
-            </div>
-            <div>
-
-                <h1>Matching locations</h1>
+                <h1 th:text="'Matching locations for \'' + ${LocationResult.query} + '\''">Matching locations</h1>
                 <ul>
                     <li th:each="location : ${LocationResult.locations}" th:with="locationName=${location.name}, locationBbox=${location.wktBbox}">
                         <a th:href="@{/map(wkt=${locationBbox})}" th:text="${locationName}"></a>
