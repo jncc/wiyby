@@ -38,7 +38,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 @Service
 public class OsLocationParserService {
     
-    private static int ENVELOPE_SCALE_FACTOR = 5;
+    public static int ENVELOPE_SCALE_FACTOR = 5;
 
     public ArrayList<Location> GetMachingLocations(String jsonData, String query) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();

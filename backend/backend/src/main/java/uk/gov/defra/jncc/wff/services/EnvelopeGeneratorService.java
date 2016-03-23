@@ -5,6 +5,7 @@
  */
 package uk.gov.defra.jncc.wff.services;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -26,15 +27,15 @@ import uk.gov.defra.jncc.wff.resources.statics.SpatialHelper;
 @Service
 public class EnvelopeGeneratorService {
     
-    public Point GetOSCentroidFromPolygon (String wkt) throws ParseException, FactoryException, MismatchedDimensionException, TransformException 
+    public Coordinate GetOSCentroidFromPolygon (String wkt) throws ParseException, FactoryException, MismatchedDimensionException, TransformException 
     {
         Geometry polygon = GetGeometryFromWKT(wkt);
         
         Geometry sourceGeom = polygon.getCentroid();
         
-        Geometry targetGeometry = TransformGeometry(sourceGeom);
+        Point targetGeometry = (Point)TransformGeometry(sourceGeom);
         
-        return (Point)targetGeometry;
+        return targetGeometry.getCoordinate();
     }
 
     public Envelope GetOSEvelopeFromPolygon(String wkt) throws ParseException, FactoryException, MismatchedDimensionException, TransformException 

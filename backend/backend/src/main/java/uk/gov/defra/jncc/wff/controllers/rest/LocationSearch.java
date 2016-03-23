@@ -6,6 +6,8 @@
 package uk.gov.defra.jncc.wff.controllers.rest;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.io.ParseException;
 import uk.gov.defra.jncc.wff.services.OsLocationParserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
 import org.apache.http.client.ClientProtocolException;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -54,7 +58,8 @@ public class LocationSearch {
     public ResponseEntity<LocationResult> getLocation(
             @ApiParam(value = "The location query")
             @RequestParam(name = "query", required = false)  String query,
-            @RequestParam(name = "polygon", required = false)  String polygon) throws Exception {
+            @RequestParam(name = "polygon", required = false)  String polygon,
+            @RequestParam(name = "type", required = false)  String geosearchType) throws Exception {
         LocationResult result = new LocationResult();
         
         HttpStatus status = HttpStatus.OK;
@@ -76,7 +81,17 @@ public class LocationSearch {
 
         } else {
             result.setQuery(polygon);
-            result.setLocations(getLocationsByPolygon(polygon));
+            if (geosearchType == null) geosearchType = "centroid";
+            
+            try 
+            {
+                result.setLocations(getLocationsByPolygon(polygon, geosearchType));
+            }
+            catch (ClientProtocolException e)
+            {
+                result.addError("bad_request", "Invalid location query");
+                status = HttpStatus.BAD_REQUEST;
+            }
         }
         
         return new ResponseEntity(result, status);
@@ -90,7 +105,18 @@ public class LocationSearch {
         return osLocationParser.GetMachingLocations(jsonResponse, query);
     } 
     
-    private List<Location> getLocationsByPolygon(String polygonWkt) throws Exception {   
+    private List<Location> getLocationsByPolygon(String polygonWkt, String geosearchType) throws Exception {   
+        
+        if ("envelope".equals(geosearchType)) {
+            return getLocationsByEnvelope(polygonWkt);
+        } else if ("centroid".equals(geosearchType)) {
+            return getLocationsByCentroid(polygonWkt);
+        } else {
+            throw new ClientProtocolException("Bad Request");
+        }
+    }
+    
+    private List<Location> getLocationsByEnvelope(String polygonWkt) throws Exception {
         String apiUrl = "https://api.ordnancesurvey.co.uk/places/v1/addresses/bbox?bbox=";
         
         Envelope env = envGenerator.GetOSEvelopeFromPolygon(polygonWkt);
@@ -105,6 +131,18 @@ public class LocationSearch {
         String jsonResponse = client.Get(queryUrl);
         return osLocationParser.GetMachingLocations(jsonResponse, "");
     }
-      
 
+    private List<Location> getLocationsByCentroid(String polygonWkt) throws Exception {
+        String apiUrl = "https://api.ordnancesurvey.co.uk/places/v1/addresses/radius?point=";
+        
+        Coordinate c = envGenerator.GetOSCentroidFromPolygon(polygonWkt);
+        
+        String x = String.valueOf(c.x);
+        String y = String.valueOf(c.y);
+        
+        String queryUrl = apiUrl + x + "," + y + "&radius=" + 100 + "&key=" + OSKeys.OS_NAMES_KEY;
+        
+        String jsonResponse = client.Get(queryUrl);
+        return osLocationParser.GetMachingLocations(jsonResponse, "");
+    }
 }
