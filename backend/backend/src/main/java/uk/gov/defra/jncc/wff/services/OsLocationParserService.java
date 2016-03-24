@@ -8,6 +8,7 @@ package uk.gov.defra.jncc.wff.services;
 import uk.gov.defra.jncc.wff.resources.Location;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vividsolutions.jts.awt.PointShapeFactory.Circle;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -30,6 +31,8 @@ import org.opengis.referencing.operation.TransformException;
 import org.springframework.stereotype.Service;
 import uk.gov.defra.jncc.wff.resources.statics.SpatialHelper;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Polygon;
+import org.geotools.geometry.jts.GeometryBuilder;
 
 /**
  *
@@ -121,35 +124,49 @@ public class OsLocationParserService {
     }
     
     public String GetCentroidFromOSPoint(double x, double y) {
+        
+        Point centroid = GetTransformedCentroidFromOSPoint(x, y);
+        
+        return GetWKTFromGeometry(centroid);
+    }
+    
+    public String GetBboxFromOSPoint(double x, double y) {
+        Point centroid = GetTransformedCentroidFromOSPoint(x, y);
+        
+        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
+        GeometryBuilder gb = new GeometryBuilder(factory);
+        
+        Polygon giantDiamondThing = gb.circle(centroid.getX(), centroid.getY(), 0.05, 4);
+        
+        Geometry bbox = giantDiamondThing.getEnvelope();
+        
+        return GetWKTFromGeometry(bbox);
+    }
+    
+    private Point GetTransformedCentroidFromOSPoint(double x, double y)
+    {
         Coordinate c = new Coordinate(x ,y );
         
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 27700);
         Geometry sourceGeom = factory.createPoint(c);
         
-        return GetWKTFromOSGeometry(sourceGeom);
-    }
-    
-    public String GetBboxFromOSPoint(double x, double y) {
-        Envelope env = new Envelope(x - ENVELOPE_SCALE_FACTOR, x + ENVELOPE_SCALE_FACTOR, y - ENVELOPE_SCALE_FACTOR, y + ENVELOPE_SCALE_FACTOR);
-
-        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 27700);
-        Geometry sourceGeom = factory.toGeometry(env);
-        
-        return GetWKTFromOSGeometry(sourceGeom);
-    }
-    
-    private String GetWKTFromOSGeometry(Geometry sourceGeom) {
         Geometry targetGeom;
-            
+        
         try {
             MathTransform transform = CRS.findMathTransform(SpatialHelper.getOS_SRS(), SpatialHelper.WSG84_SRS);
             targetGeom = JTS.transform(sourceGeom, transform);
         } catch (FactoryException | MismatchedDimensionException | TransformException ex) {
-           throw new RuntimeException(ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         }
         
+        return (Point)targetGeom;
+    }
+    
+    
+    private String GetWKTFromGeometry(Geometry geom) {
+        
         WKTWriter toText = new WKTWriter();
-        return toText.write(targetGeom);
+        return toText.write(geom);
     }
 
 
