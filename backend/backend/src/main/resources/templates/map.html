@@ -46,21 +46,32 @@
                 </p>
             </div>       
             <div>
+                <h1 class="heading-xlarge" style="margin-bottom:0.3em;">
+                    Where is your farm?
+                    <span class="heading-secondary">Change the shape by dragging the points around farm boundary</span>
+                </h1>
+            </div>
+            <div>
                 <div id="map" style="height: 600px; width:100%;"></div>
             </div>
-            <div style="margin-top: 10px;">
-                <a id="generate-report" class="button button-start disabled" style="float: right;" href="" role="button" onclick="return false;">Generate Report For Selected Location</a>
-            </div>
-            <div style="clear:both;"></div>
-            <div style="margin-top: 10px;">
-                <div class="grid-row column-two-thirds">
-                    <h1>Search Again</h1>
-                    <form action="#" th:action="@{/}" th:object="${LocationResult}" method="post">
-                        <p><input class="input-box" style="width:60%; margin-right: 10px" type="text" th:field="*{query}" /><input class="button button-start" type="submit" value="Search" /></p>
-                    </form>    
+            <div style="margin: 20px 0px 20px 0px;">
+                <div style="float: left;">
+                    <h2 class="heading-medium" style="margin-top: 0;">
+                        <a th:href="@{/}">Start again</a>
+                    </h2>
                 </div>
+                <a id="generate-report" class="button button-start disabled" style="float: right;" href="" role="button" onclick="return false;">View advice for highlighted area</a>
             </div>
-            <div style="clear:both;"></div>
+            <div style="clear:both;">&nbsp;</div>
+            <!--            <div style="margin-top: 10px;">
+                            <div class="grid-row column-two-thirds">
+                                <h1>Search Again</h1>
+                                <form action="#" th:action="@{/}" th:object="${LocationResult}" method="post">
+                                    <p><input class="input-box" style="width:60%; margin-right: 10px" type="text" th:field="*{query}" /><input class="button button-start" type="submit" value="Search" /></p>
+                                </form>    
+                            </div>
+                        </div>
+                        <div style="clear:both;"></div>-->
         </main>
 
         <div>
@@ -129,7 +140,9 @@
             });
 
             function startAgain() {
-                layer.removeFrom(map);
+                if (layer !== null) {
+                    layer.removeFrom(map);
+                }
                 map.editTools.startPolygon();
             }
 
@@ -189,29 +202,6 @@
                 minZoom: 0,
                 maxZoom: 6
             }).addTo(map);
-
-            var wms = {
-                "Nitrate Vulnerable Zones": L.tileLayer.wms(local_wms_service_url, {
-                    layers: 'wiyby:nvz_2013',
-                    format: 'image/png',
-                    version: '1.3.0',
-                    transparent: true
-                }).addTo(map),
-                "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
-                    layers: 'sw_drw_pa_sgz',
-                    format: 'image/png',
-                    version: '1.3.0',
-                    transparent: true
-                }).addTo(map),
-                "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
-                    layers: 'gw_drw_sgz_v3',
-                    format: 'image/png',
-                    version: '1.3.0',
-                    transparent: true
-                }).addTo(map)
-            };
-
-            L.control.layers({}, wms).addTo(map);
 
             if (geojsonTXT !== null) {
                 var geojson = eval("(" + geojsonTXT + ")");
