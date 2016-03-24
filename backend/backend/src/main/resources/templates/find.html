@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>WIYBY For Farmers Report</title>
+        <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
@@ -41,18 +41,23 @@
             </div>             
 
             <div>
-                <h1 class="govuk-title">Environmental impacts for farms</h1>
+                <h1 class="heading-xlarge">Environmental impacts for farms</h1>
                 <div class="grid-row column-two-thirds">
-                    <h1>Find location</h1>
+                    <h2 class="heading-large">
+                        Find your farm
+                        <span class="heading-secondary">Enter a postcode or place name</span>
+                    </h2>
                     <form action="#" th:action="@{/}" th:object="${LocationResult}" method="post">
-                        <p><input class="input-box" style="width:60%; margin-right: 10px" type="text" th:field="*{query}" /><input class="button button-start" type="submit" value="Search" /></p>
+                        <p><input autofocus="" class="form-control input-box" style="width:60%; margin-right: 10px; float:left;" type="text" th:field="*{query}" /><input style="float:left;" class="button button-start" type="submit" value="Find" /></p>
                     </form>    
                 </div>
                 <div class="grid-row column-third">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
                 </div>                    
             </div>
-            <div style="clear: both;"></div>
+            <br />
+            <br />
+            <div style="clear: both;">&nbsp;</div>
         </main>
 
         <div>
@@ -63,6 +68,7 @@
                             <h2 class="visuallyhidden">Support links</h2>
                             <ul>
                                 <li><a th:href="@{/help}">Help</a></li>
+                                <link href="../../webapp/assets/css/main.css" rel="stylesheet" type="text/css"/>
                                 <li><a th:href="@{/help#cookies}">Cookies</a></li>
                                 <li><a th:href="@{/feedback}">Contact</a></li>
                                 <li><a th:href="@{/terms}">Terms and conditions</a></li>
@@ -83,4 +89,5 @@
         </div>        
     </body>
 </html>
+
 
