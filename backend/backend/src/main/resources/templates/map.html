@@ -4,11 +4,10 @@
         <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+        <link href="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.css" rel="stylesheet" type="text/css" />
+        <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.js"></script>
 
+        <script th:src="@{/assets/js/leaflet.editable/leaflet.editable.js}" />
         <script th:src="@{/assets/js/config.js}" />
 
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
@@ -105,16 +104,87 @@
                 this.className = newClassName;
             };
 
-            var reportURL = /*[[@{report}]]*/ null;
-            var map = L.map('map', {});
+            L.EditControl = L.Control.extend({
+                options: {
+                    position: 'topleft',
+                    callback: null,
+                    kind: '',
+                    html: ''
+                },
+                onAdd: function (map) {
+                    var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+                            link = L.DomUtil.create('a', '', container);
 
-            var base = L.tileLayer(os_mapping_url, {
+                    link.href = '#';
+                    link.title = 'Create a new ' + this.options.kind;
+                    link.innerHTML = this.options.html;
+                    L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                            .on(link, 'click', function () {
+                                window.LAYER = this.options.callback.call(map.editTools);
+                            }, this);
+
+                    return container;
+                }
+
+            });
+
+            function startAgain() {
+                layer.removeFrom(map);
+                map.editTools.startPolygon();
+            }
+
+            function updateReportLink(layer) {
+                document.getElementById("generate-report").href = "report" + "?wkt=" + toWKT(layer);
+
+                if (document.getElementById("generate-report").onclick !== "") {
+                    document.getElementById("generate-report").onclick = "";
+                    document.getElementById("generate-report").removeClass("disabled");
+                }
+            }
+
+            // Based on https://gist.github.com/bmcbride/4248238
+            function toWKT(layer) {
+                var lng, lat, coords = [];
+                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+                    var latlngs = layer.getLatLngs();
+                    // Quick fix for nested latlngs
+                    if (!(latlngs[0] instanceof L.latLng)) {
+                        // Only interested in single polygons in this project
+                        latlngs = latlngs[0];
+                    }
+                    for (var i = 0; i < latlngs.length; i++) {
+                        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
+                        if (i === 0) {
+                            lng = latlngs[i].lng;
+                            lat = latlngs[i].lat;
+                        }
+                    }
+
+                    if (layer instanceof L.Polygon) {
+                        return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
+                    } else if (layer instanceof L.Polyline) {
+                        return "LINESTRING(" + coords.join(",") + ")";
+                    }
+                } else if (layer instanceof L.Marker) {
+                    return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
+                }
+            }
+
+            var reportURL = /*[[@{report}]]*/ null;
+            var geojsonTXT = /*[[${geojson}]]*/ null;
+            var geojson = null;
+            var polygon = null;
+
+            var startPoint = [43.1249, 1.254];
+            var map = L.map('map', {editable: true}).setView(startPoint, 16);
+
+            L.tileLayer(os_mapping_url, {
                 attribution: 'Contains Ordnance Survey data &copy; Crown copyright and database right 2016',
                 minZoom: 7,
                 maxZoom: 18
             }).addTo(map);
 
-            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
                 minZoom: 0,
                 maxZoom: 6
@@ -140,113 +210,46 @@
 
             L.control.layers({}, wms).addTo(map);
 
-            var editableLayers = new L.FeatureGroup();
-            map.addLayer(editableLayers);
-
-            var options = {
-                position: 'topleft',
-                draw: {
-                    polyline: false,
-                    circle: false,
-                    marker: false,
-                    polygon: {
-                        allowIntersection: false, // Restricts shapes to simple polygons
-                        drawError: {
-                            color: '#e1e100', // Color the shape will turn when intersects
-                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
-                        },
-                        shapeOptions: {
-                            color: '#ff0000'
-                        }
-                    },
-                    rectangle: {
-                        shapeOptions: {
-                            color: '#ff0000'
-                        }
-                    }
-                },
-                edit: {
-                    featureGroup: editableLayers,
-                    remove: false
-                }
-            };
-
-            var drawControl = new L.Control.Draw(options);
-            map.addControl(drawControl);
-
-            map.on('draw:created', function (e) {
-                var type = e.layerType,
-                        layer = e.layer;
-
-                editableLayers.clearLayers();
-                editableLayers.addLayer(layer);
-                wkt = toWKT(layer);
-                updateReportLink(layer);
-            });
-            map.on('draw:edited', function (e) {
-                var layers = e.layers.getLayers();
-                editableLayers.clearLayers();
-                editableLayers.addLayer(layers[0]);
-                wkt = toWKT(layers[0]);
-                updateReportLink(layers[0]);
-            });
-
-            var geojson = /*[[${geojson}]]*/ null;
-            var wkt = "";
-
-            if (geojson !== null) {
-                geojson = eval("(" + geojson + ")");
-
-                var polygon = L.geoJson(geojson, {
+            if (geojsonTXT !== null) {
+                var geojson = eval("(" + geojsonTXT + ")");
+                var geojsonPolygon = L.geoJson(geojson, {
                     style: {
-                        "color": "#ff0000",
-                        "weight": 2,
+                        "color": "#0000ff",
+                        "weight": 4,
                         "opacity": 0.65
                     }
                 });
 
-                editableLayers.addLayer(polygon.getLayers()[0]);
-                wkt = toWKT(polygon.getLayers()[0]);
-                updateReportLink(polygon.getLayers()[0]);
-                map.fitBounds(polygon.getLayers()[0].getBounds());
+                polygon = geojsonPolygon.getLayers()[0].addTo(map);
+                polygon.enableEdit();
+                map.fitBounds(polygon);
+                updateReportLink(polygon);
             } else {
                 var southWest = L.latLng(49.92, -6.02),
                         northEast = L.latLng(55.91, 1.93),
                         bounds = L.latLngBounds(southWest, northEast);
                 map.fitBounds(bounds);
             }
-
-            function updateReportLink(layer) {
-                document.getElementById("generate-report").href = reportURL + "?wkt=" + toWKT(layer);
-
-                if (document.getElementById("generate-report").onclick !== "") {
-                    document.getElementById("generate-report").onclick = "";
-                    document.getElementById("generate-report").removeClass("disabled");
+            
+            L.NewPolygonControl = L.EditControl.extend({
+                options: {
+                    position: 'topleft',
+                    callback: startAgain,
+                    kind: 'polygon',
+                    html: '▰'
                 }
-            }
+            });
+            map.addControl(new L.NewPolygonControl());
+            
+            map.on('editable:editing', function (e) {
+                layer = e.layer;
+                updateReportLink(layer);
+            });
 
-            // https://gist.github.com/bmcbride/4248238
-            function toWKT(layer) {
-                var lng, lat, coords = [];
-                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
-                    var latlngs = layer.getLatLngs();
-                    for (var i = 0; i < latlngs.length; i++) {
-                        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
-                        if (i === 0) {
-                            lng = latlngs[i].lng;
-                            lat = latlngs[i].lat;
-                        }
-                    }
-
-                    if (layer instanceof L.Polygon) {
-                        return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
-                    } else if (layer instanceof L.Polyline) {
-                        return "LINESTRING(" + coords.join(",") + ")";
-                    }
-                } else if (layer instanceof L.Marker) {
-                    return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
-                }
-            }
+            map.on('editable:drawing:end', function (e) {
+                layer = e.layer;
+                updateReportLink(layer);
+            });
             /*]]>*/
         </script>        
     </body>
