@@ -30,7 +30,7 @@
                 </div>
             </header>     
         </div>
-        
+
         <main id="content" role="main">
 
             <div id="global-header-bar"></div>
@@ -41,14 +41,20 @@
                 </p>
             </div>             
             <div>
-                <h1 th:text="'Matching locations for \'' + ${LocationResult.query} + '\''">Matching locations</h1>
-                <ul>
-                    <li th:each="location : ${LocationResult.locations}" th:with="locationName=${location.name}, locationBbox=${location.wktBbox}">
+                <h1 class="heading-xlarge">
+                    Several places matched your search
+                    <span class="heading-secondary">Please choose the correct option for your farm</span>
+                </h1>
+                <ul class="list">
+                    <li class="lede" th:each="location : ${LocationResult.locations}" th:with="locationName=${location.name}, locationBbox=${location.wktBbox}">
                         <a th:href="@{/map(wkt=${locationBbox})}" th:text="${locationName}"></a>
                     </li>
                 </ul>
-
             </div>
+            <div style="clear: both;">&nbsp;</div>
+            <br />
+            <br />
+            <br />
         </main>
 
         <div>
