@@ -194,16 +194,19 @@
                 "Nitrate Vulnerable Zones": L.tileLayer.wms(local_wms_service_url, {
                     layers: 'wiyby:nvz_2013',
                     format: 'image/png',
+                    version: '1.3.0',
                     transparent: true
                 }).addTo(map),
                 "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
                     layers: 'sw_drw_pa_sgz',
                     format: 'image/png',
+                    version: '1.3.0',
                     transparent: true
                 }).addTo(map),
                 "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
                     layers: 'gw_drw_sgz_v3',
                     format: 'image/png',
+                    version: '1.3.0',
                     transparent: true
                 }).addTo(map)
             };
@@ -230,7 +233,7 @@
                         bounds = L.latLngBounds(southWest, northEast);
                 map.fitBounds(bounds);
             }
-            
+
             L.NewPolygonControl = L.EditControl.extend({
                 options: {
                     position: 'topleft',
@@ -240,7 +243,7 @@
                 }
             });
             map.addControl(new L.NewPolygonControl());
-            
+
             map.on('editable:editing', function (e) {
                 layer = e.layer;
                 updateReportLink(layer);
