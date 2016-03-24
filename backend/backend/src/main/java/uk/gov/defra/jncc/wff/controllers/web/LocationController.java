@@ -44,7 +44,7 @@ public class LocationController {
             LocationResult searchResult = httpSearchResult.getBody();
 
             if (searchResult.getLocations().size() == 1) {
-                return "redirect:/map?wkt=" + searchResult.getLocations().get(0).wktBbox;
+                return "redirect:map?wkt=" + searchResult.getLocations().get(0).wktBbox;
             }
 
             List<Location> topLocations = searchResult.getLocations().stream()
