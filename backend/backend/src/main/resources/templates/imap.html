@@ -143,6 +143,13 @@
                 wkt = toWKT(layer);
                 updateReportLink(layer);
             });
+            map.on('draw:edited', function (e) {
+                var layers = e.layers.getLayers();
+                editableLayers.clearLayers();
+                editableLayers.addLayer(layers[0]);
+                wkt = toWKT(layers[0]);
+                updateReportLink(layers[0]);
+            });
 
             var wkt = "";
 
@@ -150,7 +157,7 @@
                     northEast = L.latLng(55.91, 1.93),
                     bounds = L.latLngBounds(southWest, northEast);
             map.fitBounds(bounds);
-            
+
             var endpointReportUrl = "";
 
             function generateReport() {
@@ -161,11 +168,11 @@
 
             function updateReportLink(layer) {
                 endpointReportUrl = reportURL + "?wkt=" + toWKT(layer);
-                
+
                 if (generateButton !== undefined) {
                     generateButton.removeFrom(map);
                 }
-                
+
                 var myButtonOptions = {
                     'text': 'Generate Report', // string
                     'onClick': generateReport, // callback function
