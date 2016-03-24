@@ -10,6 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.defra.jncc.wff.controllers.rest.LocationSearch;
 import uk.gov.defra.jncc.wff.resources.Base;
 import uk.gov.defra.jncc.wff.resources.Location;
@@ -35,7 +39,7 @@ public class LocationController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public String GetLocationsSubmit(
             @ModelAttribute LocationResult search,
-            Model model) throws Exception {
+            Model model, RedirectAttributes redirectAttributes) throws Exception {
         
         //humm try catch but don't want to reveal error to end user?
         ResponseEntity<LocationResult> httpSearchResult = locationSearch.getLocation(search.getQuery(), null, null);
@@ -44,7 +48,8 @@ public class LocationController {
             LocationResult searchResult = httpSearchResult.getBody();
 
             if (searchResult.getLocations().size() == 1) {
-                return "redirect:map?wkt=" + searchResult.getLocations().get(0).wktBbox;
+                redirectAttributes.addAttribute("wkt", searchResult.getLocations().get(0).wktBbox);
+                return "redirect:/map";
             }
 
             List<Location> topLocations = searchResult.getLocations().stream()
