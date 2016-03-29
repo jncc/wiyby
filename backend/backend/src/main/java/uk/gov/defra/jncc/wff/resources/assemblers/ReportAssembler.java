@@ -38,7 +38,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         if (locality != null && !locality.isEmpty()) {
             this.locality = locality;
         } else {
-            this.locality = "the highlighted area";
+            this.locality = "";
         }
     }
 
