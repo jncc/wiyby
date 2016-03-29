@@ -54,7 +54,8 @@
             /*<![CDATA[*/
             var reportURL = /*[[@{report}]]*/ null;
             var endpointReportUrl = "";
-            var generateButton = undefined;
+            var generateButton = null;
+            var layer = null;
 
             L.EditControl = L.Control.extend({
                 options: {
@@ -94,17 +95,15 @@
             function updateReportLink(layer) {
                 endpointReportUrl = reportURL + "?wkt=" + toWKT(layer);
 
-                if (generateButton !== undefined) {
-                    generateButton.removeFrom(map);
+                if (generateButton === null) {
+                    var myButtonOptions = {
+                        'text': 'Generate Report', // string
+                        'onClick': generateReport, // callback function
+                        'hideText': false // bool
+                    };
+
+                    generateButton = new L.Control.Button(myButtonOptions).addTo(map);
                 }
-
-                var myButtonOptions = {
-                    'text': 'Generate Report', // string
-                    'onClick': generateReport, // callback function
-                    'hideText': false // bool
-                };
-
-                generateButton = new L.Control.Button(myButtonOptions).addTo(map);
             }
 
             // Based on https://gist.github.com/bmcbride/4248238

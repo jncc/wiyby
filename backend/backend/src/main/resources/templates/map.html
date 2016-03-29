@@ -103,6 +103,8 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
+            var layer = null;
+            
             HTMLElement.prototype.removeClass = function (remove) {
                 var newClassName = "";
                 var i;
