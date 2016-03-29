@@ -4,11 +4,10 @@
         <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+        <link href="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.css" rel="stylesheet" type="text/css" />
+        <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.js"></script>
 
+        <script th:src="@{/assets/js/leaflet.editable/leaflet.editable.js}" />
         <script th:src="@{/assets/js/config.js}" />
         <script th:src="@{/assets/js/leaflet-controls/leaflet-button-control.js}" />
 
@@ -53,20 +52,91 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            HTMLElement.prototype.removeClass = function (remove) {
-                var newClassName = "";
-                var i;
-                var classes = this.className.split(" ");
-                for (i = 0; i < classes.length; i++) {
-                    if (classes[i] !== remove) {
-                        newClassName += classes[i] + " ";
-                    }
-                }
-                this.className = newClassName;
-            };
-
             var reportURL = /*[[@{report}]]*/ null;
-            var map = L.map('map', {});
+            var endpointReportUrl = "";
+            var generateButton = undefined;
+
+            L.EditControl = L.Control.extend({
+                options: {
+                    position: 'topleft',
+                    callback: null,
+                    kind: '',
+                    html: ''
+                },
+                onAdd: function (map) {
+                    var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+                            link = L.DomUtil.create('a', '', container);
+
+                    link.href = '#';
+                    link.title = 'Create a new ' + this.options.kind;
+                    link.innerHTML = this.options.html;
+                    L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                            .on(link, 'click', function () {
+                                window.LAYER = this.options.callback.call(map.editTools);
+                            }, this);
+
+                    return container;
+                }
+
+            });
+
+            function startAgain() {
+                if (layer !== null) {
+                    layer.removeFrom(map);
+                }
+                map.editTools.startPolygon();
+            }
+
+            function generateReport() {
+                window.location = endpointReportUrl;
+            }
+
+            function updateReportLink(layer) {
+                endpointReportUrl = reportURL + "?wkt=" + toWKT(layer);
+
+                if (generateButton !== undefined) {
+                    generateButton.removeFrom(map);
+                }
+
+                var myButtonOptions = {
+                    'text': 'Generate Report', // string
+                    'onClick': generateReport, // callback function
+                    'hideText': false // bool
+                };
+
+                generateButton = new L.Control.Button(myButtonOptions).addTo(map);
+            }
+
+            // Based on https://gist.github.com/bmcbride/4248238
+            function toWKT(layer) {
+                var lng, lat, coords = [];
+                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+                    var latlngs = layer.getLatLngs();
+                    // Quick fix for nested latlngs
+                    if (!(latlngs[0] instanceof L.latLng)) {
+                        // Only interested in single polygons in this project
+                        latlngs = latlngs[0];
+                    }
+                    for (var i = 0; i < latlngs.length; i++) {
+                        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
+                        if (i === 0) {
+                            lng = latlngs[i].lng;
+                            lat = latlngs[i].lat;
+                        }
+                    }
+
+                    if (layer instanceof L.Polygon) {
+                        return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
+                    } else if (layer instanceof L.Polyline) {
+                        return "LINESTRING(" + coords.join(",") + ")";
+                    }
+                } else if (layer instanceof L.Marker) {
+                    return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
+                }
+            }
+
+            var startPoint = [43.1249, 1.254];
+            var map = L.map('map', {editable: true}).setView(startPoint, 16);
 
             var base = L.tileLayer(os_mapping_url, {
                 attribution: 'Contains Ordnance Survey data &copy; Crown copyright and database right 2016',
@@ -100,112 +170,30 @@
 
             L.control.layers({}, wms).addTo(map);
 
-            var editableLayers = new L.FeatureGroup();
-            map.addLayer(editableLayers);
-
-            var options = {
-                position: 'topleft',
-                draw: {
-                    polyline: false,
-                    circle: false,
-                    marker: false,
-                    polygon: {
-                        allowIntersection: false, // Restricts shapes to simple polygons
-                        drawError: {
-                            color: '#e1e100', // Color the shape will turn when intersects
-                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
-                        },
-                        shapeOptions: {
-                            color: '#ff0000'
-                        }
-                    },
-                    rectangle: {
-                        shapeOptions: {
-                            color: '#ff0000'
-                        }
-                    }
-                },
-                edit: {
-                    featureGroup: editableLayers,
-                    remove: false
+            L.NewPolygonControl = L.EditControl.extend({
+                options: {
+                    position: 'topleft',
+                    callback: startAgain,
+                    kind: 'polygon',
+                    html: '▰'
                 }
-            };
+            });
+            map.addControl(new L.NewPolygonControl());
 
-            var drawControl = new L.Control.Draw(options);
-            map.addControl(drawControl);
-
-            map.on('draw:created', function (e) {
-                var type = e.layerType,
-                        layer = e.layer;
-
-                editableLayers.clearLayers();
-                editableLayers.addLayer(layer);
-                wkt = toWKT(layer);
+            map.on('editable:editing', function (e) {
+                layer = e.layer;
                 updateReportLink(layer);
             });
-            map.on('draw:edited', function (e) {
-                var layers = e.layers.getLayers();
-                editableLayers.clearLayers();
-                editableLayers.addLayer(layers[0]);
-                wkt = toWKT(layers[0]);
-                updateReportLink(layers[0]);
-            });
 
-            var wkt = "";
+            map.on('editable:drawing:end', function (e) {
+                layer = e.layer;
+                updateReportLink(layer);
+            });
 
             var southWest = L.latLng(49.92, -6.02),
                     northEast = L.latLng(55.91, 1.93),
                     bounds = L.latLngBounds(southWest, northEast);
             map.fitBounds(bounds);
-
-            var endpointReportUrl = "";
-
-            function generateReport() {
-                window.location = endpointReportUrl;
-            }
-
-            var generateButton = undefined;
-
-            function updateReportLink(layer) {
-                endpointReportUrl = reportURL + "?wkt=" + toWKT(layer);
-
-                if (generateButton !== undefined) {
-                    generateButton.removeFrom(map);
-                }
-
-                var myButtonOptions = {
-                    'text': 'Generate Report', // string
-                    'onClick': generateReport, // callback function
-                    'hideText': false // bool
-                };
-
-                generateButton = new L.Control.Button(myButtonOptions).addTo(map);
-
-                //document.getElementById("generate-report").href = reportURL + "?wkt=" + toWKT(layer);
-            }
-
-            // https://gist.github.com/bmcbride/4248238
-            function toWKT(layer) {
-                var lng, lat, coords = [];
-                if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
-                    var latlngs = layer.getLatLngs();
-                    for (var i = 0; i < latlngs.length; i++) {
-                        coords.push(latlngs[i].lng + " " + latlngs[i].lat);
-                        if (i === 0) {
-                            lng = latlngs[i].lng;
-                            lat = latlngs[i].lat;
-                        }
-                    }
-
-                    if (layer instanceof L.Polygon) {
-                        return "POLYGON((" + coords.join(",") + "," + lng + " " + lat + "))";
-                    } else if (layer instanceof L.Polyline) {
-                        return "LINESTRING(" + coords.join(",") + ")";
-                    }
-                } else if (layer instanceof L.Marker) {
-                    return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
-                }
-            }
             /*]]>*/
         </script>        
     </body>
