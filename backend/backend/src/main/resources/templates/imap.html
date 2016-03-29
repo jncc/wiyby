@@ -149,23 +149,38 @@
                 maxZoom: 6
             }).addTo(map);
 
-            var wms = {
-                "Nitrate Vulnerable Zones": L.tileLayer.wms(local_wms_service_url, {
-                    layers: 'wiyby:nvz_2013',
-                    format: 'image/png',
-                    transparent: true
-                }).addTo(map),
-                "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
-                    layers: 'sw_drw_pa_sgz',
-                    format: 'image/png',
-                    transparent: true
-                }).addTo(map),
-                "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
-                    layers: 'gw_drw_sgz_v3',
-                    format: 'image/png',
-                    transparent: true
-                }).addTo(map)
+            var wmsLayerNames = {
+                'Nitrate Vulnerable Zones': 'wiyby:nvz_2013', 
+                'Surface Water Safeguard Zones': 'wiyby:sw_drw_pa_sgz', 
+                'Ground Water Safeguard Zones': 'wiyby:gw_drw_sgz_v3'
             };
+
+            var wms = {};
+            for (wmsLayerName in wmsLayerNames) {
+                wms[getLegendHTML(wmsLayerName, wmsLayerNames[wmsLayerName])] = getTileLayerWMS(wmsLayerNames[wmsLayerName]);
+            }
+
+//            var wms = {
+//                "<h3>Nitrate Vulnerable Zones</h3><br/>": L.tileLayer.wms(local_wms_service_url, {
+//                    layers: 'wiyby:nvz_2013',
+//                    format: 'image/png',
+//                    transparent: true
+//                }).addTo(map),
+//                "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
+//                    layers: 'wiyby:sw_drw_pa_sgz',
+//                    format: 'image/png',
+//                    transparent: true
+//                }).addTo(map),
+//                "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
+//                    layers: 'wiyby:gw_drw_sgz_v3',
+//                    format: 'image/png',
+//                    transparent: true
+//                }).addTo(map)
+//            };
+
+            for (wmsLayer in wms) {
+                wms[wmsLayer].addTo(map);
+            }
 
             L.control.layers({}, wms).addTo(map);
 
@@ -188,6 +203,22 @@
                 layer = e.layer;
                 updateReportLink(layer);
             });
+
+            function getLegendHTML(layerTitle, layerName) {
+                return '<img src="' +
+                        local_wms_service_url +
+                        '?REQUEST=GetLegendGraphic&VERSION=1.3.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LEGEND_OPTIONS=forceLabels:on&LAYER=' +
+                        layerName +
+                        '" alt="legend"/>';
+            }
+            
+            function getTileLayerWMS(layerName) {
+                return L.tileLayer.wms(local_wms_service_url, {
+                    layers: layerName,
+                    format: 'image/png',
+                    transparent: true
+                });
+            }
 
             var southWest = L.latLng(49.92, -6.02),
                     northEast = L.latLng(55.91, 1.93),
