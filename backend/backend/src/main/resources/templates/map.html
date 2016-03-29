@@ -212,10 +212,10 @@
                         "opacity": 0.65
                     }
                 });
-
+               
                 polygon = geojsonPolygon.getLayers()[0].addTo(map);
                 polygon.enableEdit();
-                map.fitBounds(polygon);
+                map.fitBounds(polygon.getBounds());
                 updateReportLink(polygon);
             } else {
                 var southWest = L.latLng(49.92, -6.02),
