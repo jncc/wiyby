@@ -45,8 +45,8 @@
             </div>             
 
             <div>                    
-                <h2 th:if="${#strings.isEmpty(resource.locality)}" th:text="'Report for Highlighted Area'"></h2>
-                <h2 th:if="not ${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted area in the vicinity of ' + ${resource.locality}"></h2>
+                <h1 class="heading-xlarge" th:if="${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted area'"></h2>
+                <h1 class="heading-xlarge" th:if="not ${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted area near ' + ${resource.locality}"></h2>
                 <div>
                     <div class="grid-row column-two-thirds">
                         <div id="map" style="height: 300px; width:100%;"></div>
@@ -56,9 +56,10 @@
                     </div>
                 </div>
                 <br />
+                <br />
                 <div style="clear: both; padding-top: 10px;"></div>
                 <div th:if="${resource.ruleTypesMatched.containsKey('Statutory')}">
-                    <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal Requirements:</h2>
+                    <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal requirements</h2>
                     <div th:each="rule : ${resource.data}">
                         <div th:switch="${rule.Type}">
                             <div th:case="'Statutory'">
@@ -70,7 +71,7 @@
                     </div>
                 </div>
                 <div th:if="${resource.ruleTypesMatched.containsKey('Recommended')}">
-                    <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Recommended Actions:</h2>
+                    <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Recommended actions</h2>
                     <div th:each="rule : ${resource.data}">
                         <div th:switch="${rule.Type}">
                             <div th:case="'Recommended'">
@@ -153,7 +154,7 @@
             var polygon = L.geoJson(geojson, {
                 style: {
                     "color": "#ff0000",
-                    "weight": 2,
+                    "weight": 4,
                     "opacity": 0.65
                 }
             });
