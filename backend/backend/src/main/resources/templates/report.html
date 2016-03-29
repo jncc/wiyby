@@ -53,6 +53,7 @@
                     </div>
                     <div class="grid-row column-third" style="float: right;">
                         <div id="minimap" style="height: 200px; width:100%;"></div>
+                        <p><a th:href="@{/imap(wkt=${resource.wkt})}">Go to Interactive Map</a></p>
                     </div>
                 </div>
                 <br />
@@ -144,7 +145,7 @@
                 maxZoom: 6
             }).addTo(map);
 
-            var geojson = /*[[${resource.wkt}]]*/ null;
+            var geojson = /*[[${resource.geojson}]]*/ null;
             geojson = eval("(" + geojson + ")");
 
             var wfd_geojson = /*[[${wfd_catchment}]]*/ null;

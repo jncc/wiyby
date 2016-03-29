@@ -25,16 +25,17 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
 
     private static final Map<String, String> MAPPINGS = CodeMappings.mappings();
     private String wkt;
+    private String geojson;
     private String locality;
 
     public ReportAssembler() {
         super(ReportController.class, Report.class);
     }
 
-    public ReportAssembler(String wkt, String locality) {
+    public ReportAssembler(String wkt, String geojson, String locality) {
         super(ReportController.class, Report.class);
         this.wkt = wkt;
-        
+        this.geojson = geojson;
         if (locality != null && !locality.isEmpty()) {
             this.locality = locality;
         } else {
@@ -48,6 +49,14 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
 
     public void setWkt(String wkt) {
         this.wkt = wkt;
+    }
+
+    public String getGeojson() {
+        return geojson;
+    }
+
+    public void setGeojson(String geojson) {
+        this.geojson = geojson;
     }
 
     public String getLocality() {
@@ -99,8 +108,13 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         output.setRuleTypesMatched(new ConcurrentHashMap<>());
         output.setData(applyRules(zoneOutputList, codeOutputList, output.getRuleTypesMatched()));
 
-        if (wkt != null && !wkt.isEmpty() && locality != null && !locality.isEmpty()) {
+        if (wkt != null && !wkt.isEmpty()) {
             output.setWkt(wkt);
+        }
+        if (geojson != null && !geojson.isEmpty()) {
+            output.setGeojson(geojson);
+        }
+        if (locality != null && !locality.isEmpty()) {
             output.setLocality(locality);
         }
 
@@ -206,7 +220,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         }
 
     }
-    
+
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
@@ -219,14 +233,14 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
             return zone.getAlt();
         }
     }
-    
+
     private String swUrlsStr(Map<String, List<AttributedZone>> zoneOutputs) {
         String urls = zoneOutputs.get("SGZ_SW").stream()
                 .filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty())
                 .filter(distinctByKey((e) -> e.getUrl()))
                 .map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName()))
                 .collect(Collectors.joining("<br />"));
-        
+
         return urls;
     }
 }

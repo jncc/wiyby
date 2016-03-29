@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ import uk.gov.defra.jncc.wff.resources.Base;
 import uk.gov.defra.jncc.wff.resources.Location;
 import uk.gov.defra.jncc.wff.resources.Report;
 import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
+import uk.gov.defra.jncc.wff.resources.statics.SpatialHelper;
 
 /**
  *
@@ -38,8 +40,10 @@ import uk.gov.defra.jncc.wff.resources.assemblers.ReportAssembler;
 @Api(value = "/rest/report", description = "Generates report objects for a given area for use by a frontend application")
 public class ReportController {
 
-    @Autowired AttributedZoneRepository attributedZoneRepository;
-    @Autowired LocationSearch locationSearch;
+    @Autowired
+    AttributedZoneRepository attributedZoneRepository;
+    @Autowired
+    LocationSearch locationSearch;
 
     /**
      * Generates an environmental report for a given area defined in WKT (WGS84)
@@ -60,7 +64,7 @@ public class ReportController {
             @ApiParam(value = "A WKT bounding box defined in EPSG:4326")
             @RequestParam(name = "wkt", required = true) String wkt) {
         String locality;
-        
+
         AttributedZoneParameters azparams = new AttributedZoneParameters();
         Report resource = new Report();
         HttpStatus status = HttpStatus.OK;
@@ -70,7 +74,7 @@ public class ReportController {
         try {
             List<Location> locations = locationSearch.getLocation(null, wkt, "centroid").getBody().getLocations();
             if (locations.size() > 0) {
-                 locality = locations.get(0).name;
+                locality = locations.get(0).name;
             } else {
                 locality = "";
             }
@@ -79,11 +83,11 @@ public class ReportController {
         }
 
         try {
-            BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);
+            BooleanExpression predicates = AttributedZonePredicateBuilder.buildPredicates(azparams);            
             Iterable<AttributedZone> zones = attributedZoneRepository.findAll(predicates);
-            ReportAssembler assembler = new ReportAssembler(wkt, locality);
+            ReportAssembler assembler = new ReportAssembler(wkt, SpatialHelper.getGeoJSON(SpatialHelper.getGeometryFromWKT(wkt, 4326)), locality);
             resource = assembler.toResource(zones);
-        } catch (ParseException ex) {
+        } catch (ParseException | IOException ex) {
             resource.addError("wkt_parser_err", ex.getLocalizedMessage());
             status = HttpStatus.BAD_REQUEST;
         }

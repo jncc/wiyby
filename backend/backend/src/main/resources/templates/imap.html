@@ -15,6 +15,7 @@
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/header.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/footer.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/imap.css}" />
     </head>
     <body style="height: 100%">
         <div>
@@ -55,7 +56,9 @@
             var reportURL = /*[[@{report}]]*/ null;
             var endpointReportUrl = "";
             var generateButton = null;
-            var layer = null;
+            var geojsonTXT = /*[[${geojson}]]*/ null;
+            var geojson = null;
+            var polygon = null;
 
             L.EditControl = L.Control.extend({
                 options: {
@@ -82,8 +85,8 @@
             });
 
             function startAgain() {
-                if (layer !== null) {
-                    layer.removeFrom(map);
+                if (polygon !== null) {
+                    polygon.removeFrom(map);
                 }
                 map.editTools.startPolygon();
             }
@@ -150,8 +153,8 @@
             }).addTo(map);
 
             var wmsLayerNames = {
-                'Nitrate Vulnerable Zones': 'wiyby:nvz_2013', 
-                'Surface Water Safeguard Zones': 'wiyby:sw_drw_pa_sgz', 
+                'Nitrate Vulnerable Zones': 'wiyby:nvz_2013',
+                'Surface Water Safeguard Zones': 'wiyby:sw_drw_pa_sgz',
                 'Ground Water Safeguard Zones': 'wiyby:gw_drw_sgz_v3'
             };
 
@@ -160,29 +163,11 @@
                 wms[getLegendHTML(wmsLayerName, wmsLayerNames[wmsLayerName])] = getTileLayerWMS(wmsLayerNames[wmsLayerName]);
             }
 
-//            var wms = {
-//                "<h3>Nitrate Vulnerable Zones</h3><br/>": L.tileLayer.wms(local_wms_service_url, {
-//                    layers: 'wiyby:nvz_2013',
-//                    format: 'image/png',
-//                    transparent: true
-//                }).addTo(map),
-//                "Surface Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
-//                    layers: 'wiyby:sw_drw_pa_sgz',
-//                    format: 'image/png',
-//                    transparent: true
-//                }).addTo(map),
-//                "Ground Water Safeguard Zones": L.tileLayer.wms(local_wms_service_url, {
-//                    layers: 'wiyby:gw_drw_sgz_v3',
-//                    format: 'image/png',
-//                    transparent: true
-//                }).addTo(map)
-//            };
-
             for (wmsLayer in wms) {
                 wms[wmsLayer].addTo(map);
             }
 
-            L.control.layers({}, wms).addTo(map);
+            L.control.layers({}, wms, {collapsed: false}).addTo(map);
 
             L.NewPolygonControl = L.EditControl.extend({
                 options: {
@@ -195,13 +180,13 @@
             map.addControl(new L.NewPolygonControl());
 
             map.on('editable:editing', function (e) {
-                layer = e.layer;
-                updateReportLink(layer);
+                polygon = e.layer;
+                updateReportLink(polygon);
             });
 
             map.on('editable:drawing:end', function (e) {
-                layer = e.layer;
-                updateReportLink(layer);
+                polygon = e.layer;
+                updateReportLink(polygon);
             });
 
             function getLegendHTML(layerTitle, layerName) {
@@ -211,7 +196,7 @@
                         layerName +
                         '" alt="legend"/>';
             }
-            
+
             function getTileLayerWMS(layerName) {
                 return L.tileLayer.wms(local_wms_service_url, {
                     layers: layerName,
@@ -220,10 +205,26 @@
                 });
             }
 
-            var southWest = L.latLng(49.92, -6.02),
-                    northEast = L.latLng(55.91, 1.93),
-                    bounds = L.latLngBounds(southWest, northEast);
-            map.fitBounds(bounds);
+            if (geojsonTXT !== null) {
+                var geojson = eval("(" + geojsonTXT + ")");
+                var geojsonPolygon = L.geoJson(geojson, {
+                    style: {
+                        "color": "#0000ff",
+                        "weight": 4,
+                        "opacity": 0.65
+                    }
+                });
+
+                polygon = geojsonPolygon.getLayers()[0].addTo(map);
+                polygon.enableEdit();
+                map.fitBounds(polygon.getBounds());
+                updateReportLink(polygon);
+            } else {
+                var southWest = L.latLng(49.92, -6.02),
+                        northEast = L.latLng(55.91, 1.93),
+                        bounds = L.latLngBounds(southWest, northEast);
+                map.fitBounds(bounds);
+            }
             /*]]>*/
         </script>        
     </body>

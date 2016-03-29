@@ -15,6 +15,8 @@ public class Report extends Base {
 
     @ApiModelProperty(value = "A WKT representatation of the area covered by this report", required = false)
     public String wkt;
+    @ApiModelProperty(value = "A GeoJSON representatation of the area covered by this report", required = false)
+    public String geojson;    
     @ApiModelProperty(value = "A human readable approximate location for this report", required = false)
     public String locality;
     @ApiModelProperty(value = "A List of mappings of matched rules in the form;"
@@ -29,8 +31,9 @@ public class Report extends Base {
     public Report() {
     }
 
-    public Report(String wkt, String locality, List<Map<String, String>> data) {
+    public Report(String wkt, String geojson, String locality, List<Map<String, String>> data) {
         this.wkt = wkt;
+        this.geojson = geojson;
         this.locality = locality;
         this.data = data;
     }
@@ -41,6 +44,14 @@ public class Report extends Base {
 
     public void setWkt(String wkt) {
         this.wkt = wkt;
+    }
+
+    public String getGeojson() {
+        return geojson;
+    }
+
+    public void setGeojson(String geojson) {
+        this.geojson = geojson;
     }
 
     public String getLocality() {
