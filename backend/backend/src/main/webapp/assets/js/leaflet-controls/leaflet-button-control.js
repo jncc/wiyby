@@ -6,6 +6,7 @@ L.Control.Button = L.Control.extend({
   options: {
     position: 'bottomright'
   },
+  
   initialize: function (options) {
     this._button = {};
     this.setButton(options);

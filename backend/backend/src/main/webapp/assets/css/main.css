@@ -3022,31 +3022,31 @@ output {
 }
 
 .form-control {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  font-family: "nta", Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.25;
-  font-weight: 400;
-  text-transform: none;
-  width: 100%;
-  padding: 4px;
-  background-color: #fff;
-  border: 2px solid #6f777b;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: "nta", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 400;
+    text-transform: none;
+    width: 100%;
+    padding: 4px;
+    background-color: #fff;
+    border: 2px solid #6f777b;
 }
 
 @media (min-width: 641px) {
-  .form-control {
-    font-size: 19px;
-    line-height: 1.3157894737;
-  }
+    .form-control {
+        font-size: 19px;
+        line-height: 1.3157894737;
+    }
 }
 
 @media (min-width: 641px) {
-  .form-control {
-    width: 50%;
-  }
+    .form-control {
+        width: 50%;
+    }
 }
 
 .form-control::-moz-placeholder {
@@ -8071,6 +8071,82 @@ button.close {
     }
 }
 
+.button-grey {
+    font-family: "nta", Arial, sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    background-color: #dee0e2;
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    padding: 0.4em 0.7em 0.3em 0.7em;
+    border: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+    box-shadow: 0 2px 0 #b5babe;
+    line-height: 1.25;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer;
+    color: #0b0c0c;
+}
+
+.button-grey:visited {
+    background-color: #dee0e2;
+}
+
+.button-grey:hover, .button-grey:focus {
+    background-color: #d0d3d6;
+}
+
+.button-grey:active {
+    top: 2px;
+    box-shadow: 0 0 0 #dee0e2;
+}
+
+.button-grey.disabled, .button-grey[disabled="disabled"], .button-grey[disabled] {
+    zoom: 1;
+    filter: alpha(opacity=50);
+    opacity: 0.5;
+}
+
+.button-grey.disabled:hover, .button-grey[disabled="disabled"]:hover, .button-grey[disabled]:hover {
+    cursor: default;
+    background-color: #dee0e2;
+}
+
+.button-grey.disabled:active, .button-grey[disabled="disabled"]:active, .button-grey[disabled]:active {
+    top: 0;
+    box-shadow: 0 2px 0 #b5babe;
+}
+
+.button-grey:link, .button-grey:hover, .button-grey:focus, .button-grey:visited {
+    color: #0b0c0c;
+}
+
+.button-grey:before {
+    content: "";
+    height: 110%;
+    width: 100%;
+    display: block;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.button-grey:active:before {
+    top: -10%;
+    height: 120%;
+}
+
+.button-grey[rel="external"]:after {
+    display: none;
+    content: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 @-ms-viewport {
     width: device-width;
 }
@@ -9123,11 +9199,4 @@ table td.numeric {
         font-size: 19px;
         line-height: 1.2;
     }
-}
-
-input:focus,
-textarea:focus,
-select:focus,
-button:focus {
-  outline: 3px solid #ffbf47;
 }

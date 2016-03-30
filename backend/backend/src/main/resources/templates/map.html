@@ -8,6 +8,7 @@
         <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.js"></script>
 
         <script th:src="@{/assets/js/leaflet.editable/leaflet.editable.js}" />
+        <script th:src="@{/assets/js/leaflet-controls/leaflet-button-control.js}" />
         <script th:src="@{/assets/js/config.js}" />
 
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
@@ -103,8 +104,11 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            var layer = null;
-            
+            var reportURL = /*[[@{report}]]*/ null;
+            var geojsonTXT = /*[[${geojson}]]*/ null;
+            var geojson = null;
+            var polygon = null;
+
             HTMLElement.prototype.removeClass = function (remove) {
                 var newClassName = "";
                 var i;
@@ -142,8 +146,8 @@
             });
 
             function startAgain() {
-                if (layer !== null) {
-                    layer.removeFrom(map);
+                if (polygon !== null) {
+                    polygon.removeFrom(map);
                 }
                 map.editTools.startPolygon();
             }
@@ -184,7 +188,7 @@
                     return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
                 }
             }
-            
+
             function getLegendHTML(layerTitle, layerName) {
                 return '<img src="' +
                         local_wms_service_url +
@@ -199,12 +203,7 @@
                     format: 'image/png',
                     transparent: true
                 });
-            }            
-
-            var reportURL = /*[[@{report}]]*/ null;
-            var geojsonTXT = /*[[${geojson}]]*/ null;
-            var geojson = null;
-            var polygon = null;
+            }
 
             var startPoint = [43.1249, 1.254];
             var map = L.map('map', {editable: true}).setView(startPoint, 16);
@@ -220,7 +219,7 @@
                 minZoom: 0,
                 maxZoom: 6
             }).addTo(map);
-            
+
             /**
              * Legend entity
              */
@@ -233,8 +232,8 @@
             var wms = {};
             for (wmsLayerName in wmsLayerNames) {
                 wms[getLegendHTML(wmsLayerName, wmsLayerNames[wmsLayerName])] = getTileLayerWMS(wmsLayerNames[wmsLayerName]);
-            }            
-            
+            }
+
             L.control.layers({}, wms).addTo(map);
 
             if (geojsonTXT !== null) {
@@ -246,7 +245,7 @@
                         "opacity": 0.65
                     }
                 });
-               
+
                 polygon = geojsonPolygon.getLayers()[0].addTo(map);
                 polygon.enableEdit();
                 map.fitBounds(polygon.getBounds());
@@ -258,24 +257,21 @@
                 map.fitBounds(bounds);
             }
 
-            L.NewPolygonControl = L.EditControl.extend({
-                options: {
-                    position: 'topleft',
-                    callback: startAgain,
-                    kind: 'polygon',
-                    html: '▰'
-                }
-            });
-            map.addControl(new L.NewPolygonControl());
+            var button = new L.Control.Button({
+                'text': 'Draw New Boundary', // string
+                'onClick': startAgain, // callback function
+                'hideText': false, // bool
+                'styleClasses': 'button-grey'
+            }).setPosition('bottomleft').addTo(map);
 
             map.on('editable:editing', function (e) {
-                layer = e.layer;
-                updateReportLink(layer);
+                polygon = e.layer;
+                updateReportLink(polygon);
             });
 
             map.on('editable:drawing:end', function (e) {
-                layer = e.layer;
-                updateReportLink(layer);
+                polygon = e.layer;
+                updateReportLink(polygon);
             });
             /*]]>*/
         </script>        
