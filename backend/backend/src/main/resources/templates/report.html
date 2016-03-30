@@ -4,8 +4,8 @@
         <title>Environmental impacts for farms</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-        <link rel="stylesheet" th:href="@{/assets/leaflet/leaflet.css}" />
-        <script th:src="@{/assets/leaflet/leaflet.js}"></script>
+        <link href="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.css" rel="stylesheet" type="text/css" />
+        <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.js"></script>
         <script th:src="@{/assets/js/config.js}" />
 
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}" />
@@ -53,7 +53,7 @@
                     </div>
                     <div class="grid-row column-third" style="float: right;">
                         <div id="minimap" style="height: 200px; width:100%;"></div>
-                        <p><a th:href="@{/imap(wkt=${resource.wkt})}" target="_blank">Go to Interactive Map</a></p>
+                        <p>View on our <a th:href="@{/imap(wkt=${resource.wkt})}" target="_blank">interactive map</a>.</p>
                     </div>
                 </div>
                 <br />
@@ -161,7 +161,7 @@
             });
 
             polygon.addTo(map);
-            map.fitBounds(polygon.getBounds(), {padding: [1, 1]});
+            map.fitBounds(polygon.getBounds());
 
             // Mini-map polygons
             var mini_polygon = L.geoJson(geojson, {
@@ -189,7 +189,7 @@
             mini_polygon.addTo(minimap);
 
             if (wfd_geojson.features.length > 0) {
-                minimap.fitBounds(wfd_polygon.getBounds(), {padding: [1, 1]});
+                minimap.fitBounds(wfd_polygon.getBounds());
             } else {
                 minimap.fitBounds(mini_polygon.getBounds(), {padding: [50, 50]});
             }
