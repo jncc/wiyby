@@ -12,6 +12,8 @@
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/fonts.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/header.css}" />
         <link rel="stylesheet" type="text/css" th:href="@{/assets/css/footer.css}" />
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
     </head>
     <body>
         <div>
@@ -49,16 +51,17 @@
                 <h1 class="heading-xlarge" th:if="not ${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted boundary near ' + ${resource.locality}"></h1>
                 <div>
                     <div class="grid-row column-two-thirds">
-                        <div id="map" style="height: 300px; width:100%;"></div>
+                        <div id="map" style="height: 350px; width:100%;"></div>
                     </div>
                     <div class="grid-row column-third" style="float: right;">
                         <div id="minimap" style="height: 200px; width:100%;"></div>
+                        <p style="margin-top: 3em;"><span class="button-grey" onclick="window.print()"><span class="glyphicon glyphicon-print"></span> Print</span></p>
                         <p>View on our <a th:href="@{/imap(wkt=${resource.wkt})}" target="_blank">interactive map</a>.</p>
                     </div>
                 </div>
                 <br />
                 <br />
-                <div style="clear: both; padding-top: 10px;"></div>
+                <div style="clear: both; padding-top: 2em;"></div>
                 <div th:if="${resource.ruleTypesMatched.containsKey('Statutory')}">
                     <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal requirements</h2>
                     <div th:each="rule : ${resource.data}">
