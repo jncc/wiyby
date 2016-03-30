@@ -9200,3 +9200,10 @@ table td.numeric {
         line-height: 1.2;
     }
 }
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  outline: 3px solid #ffbf47;
+}

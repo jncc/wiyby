@@ -23,6 +23,13 @@ import uk.gov.defra.jncc.wff.resources.statics.CodeMappings;
  */
 public class ReportAssembler extends ResourceAssemblerSupport<Iterable<AttributedZone>, Report> {
 
+    private static final String NVZ_URL = "/holding";
+    private static final String RISK_MAP_URL = "/holding";
+    private static final String SGZ_SW_NO_RISK_URL = "/holding";
+    private static final String SGZ_SW_NO_RISK_URL_2 = "/holding";
+    private static final String GENERIC_ADVICE_URL = "/holding";
+    
+    
     private static final Map<String, String> MAPPINGS = CodeMappings.mappings();
     private String wkt;
     private String geojson;
@@ -132,7 +139,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                     new SimpleEntry<>("Rule", "NVZ"),
                     new SimpleEntry<>("Type", "Statutory"),
                     new SimpleEntry<>("Heading", "This farm has to comply with the Action Programme Measures for Nitrates"),
-                    new SimpleEntry<>("Text", "This means you must read and understand what is required of you including the <a href=\"#\">preparation of a Risk Map</a><br/>Download: <a href=\"#\">latest Nitrate Vulnerable Zone guidance</a>")
+                    new SimpleEntry<>("Text", String.format("This means you must read and understand what is required of you including the <a href=\"%s\" target=\"_blank\">preparation of a Risk Map</a><br/>Download: <a href=\"%s\" target=\"_blank\">latest Nitrate Vulnerable Zone guidance</a>", RISK_MAP_URL, NVZ_URL))
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
@@ -145,13 +152,12 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         new SimpleEntry<>("Rule", "SGZ_SW_NO_RISK"),
                         new SimpleEntry<>("Type", "Recommended"),
                         new SimpleEntry<>("Heading", "This land is in a drinking water catchment which is currently not at risk from any pollutants."),
-                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is not currrently at risk, but to keep your drinking water safe please continue to follow best practice<br/>Vist the <a href=\"#\">Best Practice site</a>", this.locality))
+                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is not currrently at risk, but to keep your drinking water safe please continue to follow best practice<br/>Vist the <a href=\"%s\" target=\"_blank\">Best Practice site</a>", this.locality, SGZ_SW_NO_RISK_URL))
                 ).collect(
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
             } else {
                 String codeText = mapCodesToText(codeOutputs.get("SGZ_SW"), "SGZ_SW");
-                //String urls = zoneOutputs.get("SGZ_SW").stream().filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty()).map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName())).collect(Collectors.joining("<br />"));
                 String urls = swUrlsStr(zoneOutputs);
                 finalList.add(Collections.unmodifiableMap(Stream.of(
                         new SimpleEntry<>("Rule", "SGZ_SW"),
@@ -184,7 +190,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                     new SimpleEntry<>("Rule", "NONE"),
                     new SimpleEntry<>("Type", "Recommended"),
                     new SimpleEntry<>("Heading", String.format("Look after your environment")),
-                    new SimpleEntry<>("Text", String.format("See the links below for ways to get the best out of your environment<br/>Vist the <a href=\"\">Generic Advice Site</a>"))
+                    new SimpleEntry<>("Text", String.format("See the links below for ways to get the best out of your environment<br/>Vist the <a href=\"%s\" target=\"_blank\">Generic Advice Site</a>", GENERIC_ADVICE_URL))
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
@@ -228,7 +234,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
 
     private String gwContactLink(AttributedZone zone) {
         if (zone.getUrl() != null && !zone.getUrl().isEmpty()) {
-            return String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", zone.getUrl(), zone.getName());
+            return String.format("Visit the <a href=\"%s\" target=\"_blank\">Safeguard Zone Action Plan for %s</a>", zone.getUrl(), zone.getName());
         } else {
             return zone.getAlt();
         }
@@ -238,7 +244,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         String urls = zoneOutputs.get("SGZ_SW").stream()
                 .filter((e) -> e.getAttributes() != null && !e.getAttributes().isEmpty())
                 .filter(distinctByKey((e) -> e.getUrl()))
-                .map((e) -> String.format("Visit the <a href=\"%s\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName()))
+                .map((e) -> String.format("Visit the <a href=\"%s\" target=\"_blank\">Safeguard Zone Action Plan for %s</a>", e.getUrl(), e.getName()))
                 .collect(Collectors.joining("<br />"));
 
         return urls;
