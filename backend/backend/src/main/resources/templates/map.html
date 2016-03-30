@@ -184,6 +184,22 @@
                     return "POINT(" + layer.getLatLng().lng + " " + layer.getLatLng().lat + ")";
                 }
             }
+            
+            function getLegendHTML(layerTitle, layerName) {
+                return '<img src="' +
+                        local_wms_service_url +
+                        '?REQUEST=GetLegendGraphic&VERSION=1.3.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LEGEND_OPTIONS=forceLabels:on&LAYER=' +
+                        layerName +
+                        '" alt="legend"/>';
+            }
+
+            function getTileLayerWMS(layerName) {
+                return L.tileLayer.wms(local_wms_service_url, {
+                    layers: layerName,
+                    format: 'image/png',
+                    transparent: true
+                });
+            }            
 
             var reportURL = /*[[@{report}]]*/ null;
             var geojsonTXT = /*[[${geojson}]]*/ null;
@@ -204,6 +220,22 @@
                 minZoom: 0,
                 maxZoom: 6
             }).addTo(map);
+            
+            /**
+             * Legend entity
+             */
+            var wmsLayerNames = {
+                'Nitrate Vulnerable Zones': 'wiyby:nvz_2013',
+                'Surface Water Safeguard Zones': 'wiyby:sw_drw_pa_sgz',
+                'Ground Water Safeguard Zones': 'wiyby:gw_drw_sgz_v3'
+            };
+
+            var wms = {};
+            for (wmsLayerName in wmsLayerNames) {
+                wms[getLegendHTML(wmsLayerName, wmsLayerNames[wmsLayerName])] = getTileLayerWMS(wmsLayerNames[wmsLayerName]);
+            }            
+            
+            L.control.layers({}, wms).addTo(map);
 
             if (geojsonTXT !== null) {
                 var geojson = eval("(" + geojsonTXT + ")");

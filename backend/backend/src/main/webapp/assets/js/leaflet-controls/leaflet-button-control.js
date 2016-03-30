@@ -1,6 +1,7 @@
+/* global L */
+
 // Based on https://gist.github.com/ejh/2935327 some minor changes for styling 
-// etc... Will eventually factor out the bits so it works as intended for our
-// purposes
+// etc... Will factor out the bits so it works as intended for our purposes
 L.Control.Button = L.Control.extend({
   options: {
     position: 'bottomright'
@@ -28,10 +29,11 @@ L.Control.Button = L.Control.extend({
       'text': options.text,                 //string
       'iconUrl': options.iconUrl,           //string
       'onClick': options.onClick,           //callback function
-      'hideText': !!options.hideText,         //forced bool
-      'maxWidth': options.maxWidth || 70,     //number
-      'doToggle': options.toggle,			//bool
-      'toggleStatus': false					//bool
+      'hideText': !!options.hideText,       //forced bool
+      'maxWidth': options.maxWidth || 70,   //number
+      'doToggle': options.toggle,           //bool
+      'toggleStatus': false,                //bool
+      'styleClasses': options.styleClasses  //string
     };
 
     this._button = button;
@@ -75,15 +77,16 @@ L.Control.Button = L.Control.extend({
     var newButton = L.DomUtil.create('div', 'leaflet-buttons-control-button', this._container);
     if(button.toggleStatus)
     	L.DomUtil.addClass(newButton,'leaflet-buttons-control-toggleon');
-        
-//    var image = L.DomUtil.create('img', 'leaflet-buttons-control-img', newButton);
-//    image.setAttribute('src',button.iconUrl);
+    
+    if (button.image !== null && button.image !== undefined && button.image !== '') {
+        var image = L.DomUtil.create('img', 'leaflet-buttons-control-img', newButton);
+        image.setAttribute('src',button.iconUrl);
+    }
     
     if(button.text !== ''){
-
       L.DomUtil.create('br','',newButton);  //there must be a better way
 
-      var span = L.DomUtil.create('span', 'leaflet-buttons-control-text button button-start', newButton);
+      var span = L.DomUtil.create('span', 'leaflet-buttons-control-text ' + button.styleClasses, newButton);
       var text = document.createTextNode(button.text);  //is there an L.DomUtil for this?
       span.appendChild(text);
       if(button.hideText)
