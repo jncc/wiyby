@@ -45,8 +45,8 @@
             </div>             
 
             <div>                    
-                <h1 class="heading-xlarge" th:if="${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted area'"></h1>
-                <h1 class="heading-xlarge" th:if="not ${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted area near ' + ${resource.locality}"></h1>
+                <h1 class="heading-xlarge" th:if="${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted boundary'"></h1>
+                <h1 class="heading-xlarge" th:if="not ${#strings.isEmpty(resource.locality)}" th:text="'Report for highlighted boundary near ' + ${resource.locality}"></h1>
                 <div>
                     <div class="grid-row column-two-thirds">
                         <div id="map" style="height: 300px; width:100%;"></div>
