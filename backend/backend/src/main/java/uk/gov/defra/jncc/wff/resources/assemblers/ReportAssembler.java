@@ -23,13 +23,11 @@ import uk.gov.defra.jncc.wff.resources.statics.CodeMappings;
  */
 public class ReportAssembler extends ResourceAssemblerSupport<Iterable<AttributedZone>, Report> {
 
-    private static final String NVZ_URL = "/holding";
-    private static final String RISK_MAP_URL = "/holding";
+    private static final String NVZ_URL = "https://www.gov.uk/guidance/nutrient-management-nitrate-vulnerable-zones";
 
     private static final String VOLUNTARY_INITIATIVE = "http://www.voluntaryinitiative.org.uk/en/water/advice";
     private static final String KEY_ACTIONS_FOR_FARMERS = "http://www.cfeonline.org.uk/key-actions-handout-final-011013/";
 
-    private static final String SGZ_SW_NO_RISK_URL = "/holding";
     private static final String GENERIC_ADVICE_URL = "/holding";
 
     private static final Map<String, String> MAPPINGS = CodeMappings.mappings();
