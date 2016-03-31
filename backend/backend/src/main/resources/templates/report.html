@@ -62,7 +62,7 @@
                 <br />
                 <br />
                 <div style="clear: both; padding-top: 2em;"></div>
-                <p>This report summarises the water issues in the area you've selected. It describes the actions you should take to protect your business interests.</p>
+                <div style="padding-bottom: 1em;"><p class="lede">This report summarises the water issues in the area you've selected. It describes the actions you should take to protect your business interests.</p></div>
                 <div th:if="${resource.ruleTypesMatched.containsKey('Statutory')}">
                     <h2 style="background: black; color: white; padding: 5px; margin-bottom: 5px;">Legal requirements</h2>
                     <div th:each="rule : ${resource.data}">
