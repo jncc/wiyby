@@ -34,6 +34,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
     private String wkt;
     private String geojson;
     private String locality;
+    private String localityText;
 
     public ReportAssembler() {
         super(ReportController.class, Report.class);
@@ -45,8 +46,10 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
         this.geojson = geojson;
         if (locality != null && !locality.isEmpty()) {
             this.locality = locality;
+            this.localityText = locality;
         } else {
             this.locality = "";
+            this.localityText = "the highlighted boundary";
         }
     }
 
@@ -72,6 +75,14 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
 
     public void setLocality(String locality) {
         this.locality = locality;
+    }
+
+    public String getLocalityText() {
+        return localityText;
+    }
+
+    public void setLocalityText(String localityText) {
+        this.localityText = localityText;
     }
 
     @Override
@@ -152,7 +163,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         new SimpleEntry<>("Rule", "SGZ_SW_NO_RISK"),
                         new SimpleEntry<>("Type", "Recommended"),
                         new SimpleEntry<>("Heading", "This land is in a drinking water catchment which is currently not at risk from any pollutants."),
-                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is not currrently at risk, but to keep your drinking water safe please continue to follow best practice<br/>Vist the <a href=\"%s\" target=\"_blank\">Best Practice site</a>", this.locality, SGZ_SW_NO_RISK_URL))
+                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is not currrently at risk, but to keep your drinking water safe please continue to follow best practice<br/>Vist the <a href=\"%s\" target=\"_blank\">Best Practice site</a>", this.localityText, SGZ_SW_NO_RISK_URL))
                 ).collect(
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
@@ -163,7 +174,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                         new SimpleEntry<>("Rule", "SGZ_SW"),
                         new SimpleEntry<>("Type", "Recommended"),
                         new SimpleEntry<>("Heading", String.format("This land is within a surface water safeguard zone which protects drinking water from the following %s.", codeText)),
-                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", locality, codeText, urls))
+                        new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", this.localityText, codeText, urls))
                 ).collect(
                         Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
                 )));
@@ -178,7 +189,7 @@ public class ReportAssembler extends ResourceAssemblerSupport<Iterable<Attribute
                     new SimpleEntry<>("Rule", "SGZ_GW"),
                     new SimpleEntry<>("Type", "Recommended"),
                     new SimpleEntry<>("Heading", String.format("This land is within a groundwater safeguard zone which protects drinking water from the following %s.", codeText)),
-                    new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", locality, codeText, urls))
+                    new SimpleEntry<>("Text", String.format("Water from this land provides drinking water to people living in the vicinity of %s. It is an area where %s must be used with care. Here’s what you can do to minimise the risk by changing the way you use pesticides and nutrients.<br/>%s", this.localityText, codeText, urls))
             ).collect(
                     Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())
             )));
